@@ -1,0 +1,6 @@
+service_category,city,min_price,max_price,mean_price,sample_count
+Plastering / Mason,Karachi,800,3500,1800,24
+Electrician,Karachi,600,4000,1600,18
+Painter,Karachi,2000,12000,5500,9
+Plumber / Mason,Karachi,500,2500,1100,31
+General Handyman,Karachi,500,3000,1500,8

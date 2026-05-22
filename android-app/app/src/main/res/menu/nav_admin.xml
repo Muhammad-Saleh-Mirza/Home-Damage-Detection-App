@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_admin_stats"
+        android:title="Stats"
+        android:icon="@drawable/ic_nav_home" />
+    <item
+        android:id="@+id/nav_vendors"
+        android:title="Vendors"
+        android:icon="@drawable/ic_nav_work" />
+    <item
+        android:id="@+id/nav_admin_requests"
+        android:title="Requests"
+        android:icon="@drawable/ic_nav_list" />
+    <item
+        android:id="@+id/nav_logout"
+        android:title="Logout"
+        android:icon="@drawable/ic_logout" />
+</menu>
