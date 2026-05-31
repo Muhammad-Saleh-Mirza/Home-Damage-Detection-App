@@ -3,12 +3,14 @@
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.media.RingtoneManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +29,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.Query
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.math.*
@@ -46,10 +47,14 @@ class VendorDashboardActivity : AppCompatActivity() {
     private val availableJobs = mutableListOf<VendorRequest>()
     private lateinit var availableAdapter: RequestsAdapter
     private var availableListener: ListenerRegistration? = null
+    private val knownJobIds = mutableSetOf<String>()
+    private val newJobIds = mutableSetOf<String>()
+    private var availableJobsInitialized = false
 
     private val myJobs = mutableListOf<VendorRequest>()
     private lateinit var myJobsAdapter: RequestsAdapter
     private var myJobsListener: ListenerRegistration? = null
+    private var userListener: ListenerRegistration? = null
 
     data class VendorRequest(
         val id: String,
@@ -59,6 +64,7 @@ class VendorDashboardActivity : AppCompatActivity() {
         val detectedCategory: String,
         val priceMin: Int,
         val priceMax: Int,
+        val acceptedBidAmount: Int,
         val status: String,
         val createdAt: Timestamp?,
         val lat: Double? = null,
@@ -104,9 +110,29 @@ class VendorDashboardActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         binding.progressBar.visibility = View.VISIBLE
+        startUserListener()
+    }
 
-        db.collection(Constants.COLLECTION_USERS).document(uid).get()
-            .addOnSuccessListener { doc ->
+    override fun onStop() {
+        super.onStop()
+        userListener?.remove();    userListener    = null
+        availableListener?.remove(); availableListener = null
+        myJobsListener?.remove();  myJobsListener  = null
+    }
+
+    private fun startUserListener() {
+        userListener?.remove()
+        userListener = db.collection(Constants.COLLECTION_USERS).document(uid)
+            .addSnapshotListener { doc, error ->
+                if (error != null || doc == null || !doc.exists()) {
+                    binding.progressBar.visibility = View.GONE
+                    return@addSnapshotListener
+                }
+                val isActive = doc.getBoolean("isActive") ?: true
+                if (!isActive) {
+                    showSuspendedAndLogout()
+                    return@addSnapshotListener
+                }
                 currentVendorName = doc.getString("name").orEmpty()
                 val category = doc.getString("serviceCategory").orEmpty()
                 vendorLat = doc.getDouble("latitude")
@@ -118,26 +144,32 @@ class VendorDashboardActivity : AppCompatActivity() {
                     binding.tvVendorCategory.text = "📂 $category"
                 }
                 binding.progressBar.visibility = View.GONE
-
                 if (category.isEmpty()) {
                     binding.tvEmptyAvailable.text = "Service category not set. Contact admin."
                     binding.emptyAvailableLayout.visibility = View.VISIBLE
-                    return@addOnSuccessListener
+                    return@addSnapshotListener
                 }
-                startAvailableJobsListener(category)
-                startMyJobsListener()
-            }
-            .addOnFailureListener {
-                binding.progressBar.visibility = View.GONE
-                binding.tvEmptyAvailable.text = "Failed to load profile. Try again."
-                binding.emptyAvailableLayout.visibility = View.VISIBLE
+                if (availableListener == null) {
+                    startAvailableJobsListener(category)
+                    startMyJobsListener()
+                }
             }
     }
 
-    override fun onStop() {
-        super.onStop()
-        availableListener?.remove()
-        myJobsListener?.remove()
+    private fun showSuspendedAndLogout() {
+        availableListener?.remove(); availableListener = null
+        myJobsListener?.remove();    myJobsListener    = null
+        auth.signOut()
+        AlertDialog.Builder(this)
+            .setTitle("Account Suspended")
+            .setMessage("Your account has been suspended by the admin. Please contact support.")
+            .setPositiveButton("OK") { _, _ ->
+                startActivity(Intent(this, LoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
+            }
+            .setCancelable(false)
+            .show()
     }
 
     // ── Setup ──────────────────────────────────────────────────────────────────
@@ -187,14 +219,21 @@ class VendorDashboardActivity : AppCompatActivity() {
 
     private fun startAvailableJobsListener(category: String) {
         availableListener?.remove()
+        availableJobsInitialized = false
+        knownJobIds.clear()
+
         availableListener = db.collection(Constants.COLLECTION_REQUESTS)
             .whereEqualTo("status", "open")
             .whereEqualTo("detectedCategory", category)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
-            .addSnapshotListener { snapshot, _ ->
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Toast.makeText(this, "Failed to load jobs: ${error.message}", Toast.LENGTH_LONG).show()
+                    return@addSnapshotListener
+                }
                 if (snapshot == null) return@addSnapshotListener
 
                 val allRequests = snapshot.documents.map { it.toVendorRequest() }
+                    .sortedByDescending { it.createdAt?.seconds ?: 0L }
                 val vLat = vendorLat
                 val vLon = vendorLon
 
@@ -203,14 +242,28 @@ class VendorDashboardActivity : AppCompatActivity() {
                         val rLat = req.lat
                         val rLon = req.lon
                         if (rLat == null || rLon == null) {
-                            req  // legacy request without location — include without badge
+                            req
                         } else {
                             val dist = haversine(vLat, vLon, rLat, rLon)
                             if (dist <= Constants.MAX_DISTANCE_KM) req.copy(distanceKm = dist) else null
                         }
                     }
                 } else {
-                    allRequests  // vendor has no location — show all
+                    allRequests
+                }
+
+                val filteredIds = filtered.map { it.id }.toSet()
+                if (!availableJobsInitialized) {
+                    availableJobsInitialized = true
+                    knownJobIds.addAll(filteredIds)
+                    newJobIds.clear()
+                } else {
+                    val addedIds = filteredIds - knownJobIds
+                    knownJobIds.clear()
+                    knownJobIds.addAll(filteredIds)
+                    newJobIds.clear()
+                    newJobIds.addAll(addedIds)
+                    if (addedIds.isNotEmpty()) playNewJobSound()
                 }
 
                 availableJobs.clear()
@@ -222,6 +275,13 @@ class VendorDashboardActivity : AppCompatActivity() {
                 binding.tvLocationBanner.visibility =
                     if (vLat == null) View.VISIBLE else View.GONE
             }
+    }
+
+    private fun playNewJobSound() {
+        try {
+            val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            RingtoneManager.getRingtone(this, uri)?.play()
+        } catch (_: Exception) { }
     }
 
     private fun startMyJobsListener() {
@@ -309,6 +369,11 @@ class VendorDashboardActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: VH, position: Int) {
             val req = items[position]
+            if (newJobIds.remove(req.id)) {
+                holder.b.root.startAnimation(
+                    AnimationUtils.loadAnimation(this@VendorDashboardActivity, R.anim.new_job_alert)
+                )
+            }
             with(holder.b) {
                 tvCustomerName.text = "👤 ${req.customerName}"
                 tvTitle.text        = req.title
@@ -318,6 +383,13 @@ class VendorDashboardActivity : AppCompatActivity() {
                 tvDamage.text     = "$label · ${req.detectedCategory}"
                 tvPriceRange.text = "💰 PKR ${String.format(Locale.US, "%,d", req.priceMin)}" +
                         " – ${String.format(Locale.US, "%,d", req.priceMax)}"
+
+                if (req.acceptedBidAmount > 0 && (req.status == "assigned" || req.status == "completed")) {
+                    tvAcceptedBid.text = "✅ Your Bid: PKR ${String.format(Locale.US, "%,d", req.acceptedBidAmount)}"
+                    tvAcceptedBid.visibility = View.VISIBLE
+                } else {
+                    tvAcceptedBid.visibility = View.GONE
+                }
 
                 val dist = req.distanceKm
                 if (dist != null) {
@@ -372,10 +444,11 @@ class VendorDashboardActivity : AppCompatActivity() {
         detectedCategory = getString("detectedCategory") ?: "",
         priceMin         = getLong("estimatedPriceMin")?.toInt() ?: 0,
         priceMax         = getLong("estimatedPriceMax")?.toInt() ?: 0,
+        acceptedBidAmount = getLong("acceptedBidAmount")?.toInt() ?: 0,
         status           = getString("status") ?: "",
         createdAt        = getTimestamp("createdAt"),
-        lat              = getDouble("latitude"),
-        lon              = getDouble("longitude")
+        lat              = getDouble("latitude").takeUnless { it == null || it == 0.0 },
+        lon              = getDouble("longitude").takeUnless { it == null || it == 0.0 }
     )
 
     private fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {

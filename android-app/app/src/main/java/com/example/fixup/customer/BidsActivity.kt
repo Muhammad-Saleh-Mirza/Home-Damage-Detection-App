@@ -1,23 +1,25 @@
 package com.example.fixup.customer
 
 import android.content.Intent
+import android.media.RingtoneManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.fixup.R
 import com.example.fixup.databinding.ActivityBidsBinding
 import com.example.fixup.databinding.ItemBidBinding
 import com.example.fixup.shared.ChatActivity
 import com.example.fixup.utils.Constants
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.Query
 import java.util.Locale
 
 class BidsActivity : AppCompatActivity() {
@@ -32,6 +34,9 @@ class BidsActivity : AppCompatActivity() {
     private val bids = mutableListOf<Bid>()
     private lateinit var adapter: BidsAdapter
     private var bidsListener: ListenerRegistration? = null
+    private val knownBidIds = mutableSetOf<String>()
+    private val newBidIds   = mutableSetOf<String>()
+    private var bidsInitialized = false
 
     data class Bid(
         val id: String,
@@ -103,11 +108,16 @@ class BidsActivity : AppCompatActivity() {
     // ── Bids listener ─────────────────────────────────────────────────────────
 
     private fun startBidsListener() {
+        bidsInitialized = false
+        knownBidIds.clear()
         bidsListener = db.collection(Constants.COLLECTION_BIDS)
             .whereEqualTo("requestId", requestId)
-            .orderBy("createdAt", Query.Direction.ASCENDING)
-            .addSnapshotListener { snapshot, _ ->
+            .addSnapshotListener { snapshot, error ->
                 binding.progressBar.visibility = View.GONE
+                if (error != null) {
+                    Toast.makeText(this, "Failed to load bids: ${error.message}", Toast.LENGTH_LONG).show()
+                    return@addSnapshotListener
+                }
                 if (snapshot == null) return@addSnapshotListener
                 bids.clear()
                 for (doc in snapshot.documents) {
@@ -125,9 +135,32 @@ class BidsActivity : AppCompatActivity() {
                         )
                     )
                 }
+                bids.sortBy { it.amount }
+
+                val currentIds = bids.map { it.id }.toSet()
+                if (!bidsInitialized) {
+                    bidsInitialized = true
+                    knownBidIds.addAll(currentIds)
+                    newBidIds.clear()
+                } else {
+                    val addedIds = currentIds - knownBidIds
+                    knownBidIds.clear()
+                    knownBidIds.addAll(currentIds)
+                    newBidIds.clear()
+                    newBidIds.addAll(addedIds)
+                    if (addedIds.isNotEmpty()) playNewBidSound()
+                }
+
                 adapter.notifyDataSetChanged()
                 binding.layoutBidsEmpty.visibility = if (bids.isEmpty()) View.VISIBLE else View.GONE
             }
+    }
+
+    private fun playNewBidSound() {
+        try {
+            val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            RingtoneManager.getRingtone(this, uri)?.play()
+        } catch (_: Exception) { }
     }
 
     // ── Accept flow ───────────────────────────────────────────────────────────
@@ -152,7 +185,8 @@ class BidsActivity : AppCompatActivity() {
                 "status"              to "assigned",
                 "acceptedBidId"       to bid.id,
                 "acceptedVendorId"    to bid.vendorId,
-                "acceptedVendorName"  to bid.vendorName
+                "acceptedVendorName"  to bid.vendorName,
+                "acceptedBidAmount"   to bid.amount
             )
         )
         batch.update(
@@ -202,6 +236,11 @@ class BidsActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: VH, position: Int) {
             val bid = bids[position]
+            if (newBidIds.remove(bid.id)) {
+                holder.b.root.startAnimation(
+                    AnimationUtils.loadAnimation(this@BidsActivity, R.anim.new_job_alert)
+                )
+            }
             with(holder.b) {
                 tvVendorName.text = bid.vendorName
                 tvRating.text     = "⭐ ${String.format(Locale.US, "%.1f", bid.vendorRating)}"

@@ -21,12 +21,13 @@ Market base range from recent bids: PKR {base_price['min']} – {base_price['max
 Give a realistic price estimate considering damage severity from the description,
 typical {city} labor costs, and material costs.
 
-Respond ONLY in this exact JSON format, no extra text:
+Respond ONLY with a JSON object in this exact structure, no extra text.
+Replace the angle-bracket values with your own integers:
 {{
-  "min": 1200,
-  "max": 2800,
-  "recommended": 1800,
-  "justification": "one sentence reason"
+  "min": <your_min_integer>,
+  "max": <your_max_integer>,
+  "recommended": <your_recommended_integer>,
+  "justification": "<one sentence reason>"
 }}"""
 
     try:

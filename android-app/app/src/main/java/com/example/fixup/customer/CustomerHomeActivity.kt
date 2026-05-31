@@ -10,6 +10,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.media.RingtoneManager
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +27,6 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.Query
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -51,6 +52,7 @@ class CustomerHomeActivity : AppCompatActivity() {
         val status: String,
         val acceptedVendorId: String,
         val acceptedVendorName: String,
+        val acceptedBidAmount: Int,
         val createdAt: Timestamp?
     )
 
@@ -74,7 +76,8 @@ class CustomerHomeActivity : AppCompatActivity() {
                     "assigned"  -> openChat(req)
                     else        -> openBids(req)
                 }
-            }
+            },
+            onDeleteClick = { req, position -> confirmDeleteRequest(req, position) }
         )
         binding.recyclerRequests.layoutManager = LinearLayoutManager(this)
         binding.recyclerRequests.adapter = adapter
@@ -124,8 +127,8 @@ class CustomerHomeActivity : AppCompatActivity() {
 
         snapshotListener = db.collection(Constants.COLLECTION_REQUESTS)
             .whereEqualTo("customerId", uid)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
-            .addSnapshotListener { snapshot, _ ->
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) return@addSnapshotListener
                 if (snapshot == null) return@addSnapshotListener
                 requests.clear()
                 for (doc in snapshot.documents) {
@@ -137,10 +140,12 @@ class CustomerHomeActivity : AppCompatActivity() {
                             status              = doc.getString("status") ?: "open",
                             acceptedVendorId    = doc.getString("acceptedVendorId") ?: "",
                             acceptedVendorName  = doc.getString("acceptedVendorName") ?: "",
+                            acceptedBidAmount   = doc.getLong("acceptedBidAmount")?.toInt() ?: 0,
                             createdAt           = doc.getTimestamp("createdAt")
                         )
                     )
                 }
+                requests.sortByDescending { it.createdAt?.seconds ?: 0L }
                 adapter.notifyDataSetChanged()
                 binding.layoutEmpty.visibility =
                     if (requests.isEmpty()) View.VISIBLE else View.GONE
@@ -220,12 +225,40 @@ class CustomerHomeActivity : AppCompatActivity() {
         })
     }
 
+    private fun confirmDeleteRequest(req: ServiceRequest, position: Int) {
+        AlertDialog.Builder(this)
+            .setTitle("Delete Request")
+            .setMessage("Delete \"${req.title}\"? This cannot be undone.")
+            .setPositiveButton("Delete") { _, _ ->
+                playDeleteSound()
+                if (position < requests.size) {
+                    requests.removeAt(position)
+                    adapter.notifyItemRemoved(position)
+                }
+                db.collection(Constants.COLLECTION_REQUESTS).document(req.id)
+                    .delete()
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Failed to delete: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun playDeleteSound() {
+        try {
+            val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            RingtoneManager.getRingtone(this, uri)?.play()
+        } catch (_: Exception) { }
+    }
+
     // ── Adapter ───────────────────────────────────────────────────────────────
 
     private inner class RequestsAdapter(
         private val items: List<ServiceRequest>,
         private val onCardClick: (ServiceRequest) -> Unit,
-        private val onActionClick: (ServiceRequest) -> Unit
+        private val onActionClick: (ServiceRequest) -> Unit,
+        private val onDeleteClick: (ServiceRequest, Int) -> Unit
     ) : RecyclerView.Adapter<RequestsAdapter.VH>() {
 
         inner class VH(val b: ItemRequestBinding) : RecyclerView.ViewHolder(b.root)
@@ -263,6 +296,19 @@ class CustomerHomeActivity : AppCompatActivity() {
                     tvAssignedTo.visibility = View.VISIBLE
                 } else {
                     tvAssignedTo.visibility = View.GONE
+                }
+
+                if (req.acceptedBidAmount > 0 && req.status != "open") {
+                    tvAcceptedAmount.text = "✅ Accepted Bid: PKR ${String.format(Locale.US, "%,d", req.acceptedBidAmount)}"
+                    tvAcceptedAmount.visibility = View.VISIBLE
+                } else {
+                    tvAcceptedAmount.visibility = View.GONE
+                }
+
+                btnDelete.visibility = if (req.status == "open") View.VISIBLE else View.GONE
+                btnDelete.setOnClickListener {
+                    val pos = holder.bindingAdapterPosition
+                    if (pos != RecyclerView.NO_ID.toInt()) onDeleteClick(req, pos)
                 }
 
                 val alreadyRated = req.status == "completed" && req.id in ratedRequestIds

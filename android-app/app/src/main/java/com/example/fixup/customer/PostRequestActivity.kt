@@ -384,8 +384,8 @@ class PostRequestActivity : AppCompatActivity() {
                     "status"                    to "open",
                     "acceptedBidId"             to "",
                     "acceptedVendorId"          to "",
-                    "latitude"                  to (capturedLat ?: 0.0),
-                    "longitude"                 to (capturedLon ?: 0.0),
+                    "latitude"                  to capturedLat,
+                    "longitude"                 to capturedLon,
                     "locationName"              to (capturedLocationName ?: city),
                     "createdAt"                 to FieldValue.serverTimestamp(),
                     "completedAt"               to null
