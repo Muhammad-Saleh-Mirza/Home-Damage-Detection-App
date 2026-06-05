@@ -307,8 +307,8 @@ class CustomerHomeActivity : AppCompatActivity() {
 
                 btnDelete.visibility = if (req.status == "open") View.VISIBLE else View.GONE
                 btnDelete.setOnClickListener {
-                    val pos = holder.bindingAdapterPosition
-                    if (pos != RecyclerView.NO_ID.toInt()) onDeleteClick(req, pos)
+                    val pos = holder.adapterPosition
+                    if (pos != RecyclerView.NO_POSITION) onDeleteClick(req, pos)
                 }
 
                 val alreadyRated = req.status == "completed" && req.id in ratedRequestIds

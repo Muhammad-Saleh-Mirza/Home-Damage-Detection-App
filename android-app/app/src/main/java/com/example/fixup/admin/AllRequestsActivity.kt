@@ -1,5 +1,6 @@
 package com.example.fixup.admin
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -10,13 +11,13 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.fixup.customer.RequestStatusActivity
 import com.example.fixup.databinding.ActivityAllRequestsBinding
 import com.example.fixup.databinding.ItemAdminRequestBinding
 import com.example.fixup.utils.Constants
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.Query
 import com.google.android.material.tabs.TabLayout
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -115,7 +116,6 @@ class AllRequestsActivity : AppCompatActivity() {
     private fun startRequestListener() {
         requestListener?.remove()
         requestListener = db.collection(Constants.COLLECTION_REQUESTS)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot == null) return@addSnapshotListener
                 allRequests.clear()
@@ -133,6 +133,7 @@ class AllRequestsActivity : AppCompatActivity() {
                         )
                     )
                 }
+                allRequests.sortByDescending { it.createdAt?.seconds ?: 0L }
                 binding.progressBar.visibility = View.GONE
                 applyFilter()
             }
@@ -195,6 +196,12 @@ class AllRequestsActivity : AppCompatActivity() {
                     shape        = GradientDrawable.RECTANGLE
                     cornerRadius = 12f
                     setColor(Color.parseColor(color))
+                }
+
+                root.setOnClickListener {
+                    startActivity(Intent(this@AllRequestsActivity, RequestStatusActivity::class.java).apply {
+                        putExtra("requestId", req.id)
+                    })
                 }
             }
         }

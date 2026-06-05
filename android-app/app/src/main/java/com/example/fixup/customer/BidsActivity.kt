@@ -203,6 +203,10 @@ class BidsActivity : AppCompatActivity() {
         batch.commit()
             .addOnSuccessListener {
                 binding.progressBar.visibility = View.GONE
+                try {
+                    val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    RingtoneManager.getRingtone(this, uri)?.play()
+                } catch (_: Exception) { }
                 AlertDialog.Builder(this)
                     .setTitle("Bid Accepted!")
                     .setMessage("You are now connected with ${bid.vendorName}. A chat has been opened so you can coordinate the repair.")

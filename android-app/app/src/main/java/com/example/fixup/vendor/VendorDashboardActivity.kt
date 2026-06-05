@@ -55,6 +55,8 @@ class VendorDashboardActivity : AppCompatActivity() {
     private lateinit var myJobsAdapter: RequestsAdapter
     private var myJobsListener: ListenerRegistration? = null
     private var userListener: ListenerRegistration? = null
+    private val knownMyJobIds = mutableSetOf<String>()
+    private var myJobsInitialized = false
 
     data class VendorRequest(
         val id: String,
@@ -118,6 +120,8 @@ class VendorDashboardActivity : AppCompatActivity() {
         userListener?.remove();    userListener    = null
         availableListener?.remove(); availableListener = null
         myJobsListener?.remove();  myJobsListener  = null
+        myJobsInitialized = false
+        knownMyJobIds.clear()
     }
 
     private fun startUserListener() {
@@ -285,6 +289,8 @@ class VendorDashboardActivity : AppCompatActivity() {
     }
 
     private fun startMyJobsListener() {
+        myJobsInitialized = false
+        knownMyJobIds.clear()
         myJobsListener?.remove()
         myJobsListener = db.collection(Constants.COLLECTION_REQUESTS)
             .whereEqualTo("acceptedVendorId", uid)
@@ -298,10 +304,37 @@ class VendorDashboardActivity : AppCompatActivity() {
                     }
                 }
                 myJobs.sortByDescending { it.createdAt?.seconds ?: 0L }
+
+                val currentIds = myJobs.map { it.id }.toSet()
+                if (!myJobsInitialized) {
+                    myJobsInitialized = true
+                    knownMyJobIds.addAll(currentIds)
+                } else {
+                    val newlyAccepted = myJobs.filter { it.id !in knownMyJobIds }
+                    knownMyJobIds.clear()
+                    knownMyJobIds.addAll(currentIds)
+                    if (newlyAccepted.isNotEmpty()) {
+                        playNewJobSound()
+                        showBidAcceptedDialog(newlyAccepted.first())
+                    }
+                }
+
                 myJobsAdapter.notifyDataSetChanged()
                 binding.emptyMyJobsLayout.visibility =
                     if (myJobs.isEmpty()) View.VISIBLE else View.GONE
             }
+    }
+
+    private fun showBidAcceptedDialog(req: VendorRequest) {
+        if (isFinishing || isDestroyed) return
+        AlertDialog.Builder(this)
+            .setTitle("🎉 Bid Accepted!")
+            .setMessage("Your bid for \"${req.title}\" was accepted by the customer. Head to My Jobs to start the conversation.")
+            .setPositiveButton("View My Jobs") { _, _ ->
+                binding.bottomNav.selectedItemId = R.id.nav_myjobs
+            }
+            .setNegativeButton("Later", null)
+            .show()
     }
 
     // ── Navigation ─────────────────────────────────────────────────────────────

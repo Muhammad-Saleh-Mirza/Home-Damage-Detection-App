@@ -14,21 +14,22 @@ GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 def get_ai_price_estimate(detected_class, confidence, description, city, base_price):
     prompt = f"""You are a Pakistani home repair pricing expert in {city}.
 
-Damage detected: {detected_class.replace('_', ' ')} (AI confidence: {confidence:.0%})
-Customer description: "{description}"
-Market base range from recent bids: PKR {base_price['min']} – {base_price['max']}
+Job details:
+- Damage type: {detected_class.replace('_', ' ')} (confidence: {confidence:.0%})
+- Customer description: "{description}"
+- Real market data from {base_price['sample_count']} bids in {city}:
+    Lowest bid: PKR {base_price['min']}
+    Highest bid: PKR {base_price['max']}
+    Average bid: PKR {base_price['mean']}
 
-Give a realistic price estimate considering damage severity from the description,
-typical {city} labor costs, and material costs.
+Your task: estimate min, max, and recommended price for THIS specific job.
+Rules:
+- Your numbers MUST be within PKR {base_price['min']} and PKR {base_price['max']}
+- Adjust within that range based on severity in the description
+- Mild damage = closer to PKR {base_price['min']}, severe = closer to PKR {base_price['max']}
 
-Respond ONLY with a JSON object in this exact structure, no extra text.
-Replace the angle-bracket values with your own integers:
-{{
-  "min": <your_min_integer>,
-  "max": <your_max_integer>,
-  "recommended": <your_recommended_integer>,
-  "justification": "<one sentence reason>"
-}}"""
+Reply with ONLY this JSON, no other text:
+{{"min": PUT_MIN_HERE, "max": PUT_MAX_HERE, "recommended": PUT_RECOMMENDED_HERE, "justification": "PUT_ONE_SENTENCE_HERE"}}"""
 
     try:
         res = http_requests.post(

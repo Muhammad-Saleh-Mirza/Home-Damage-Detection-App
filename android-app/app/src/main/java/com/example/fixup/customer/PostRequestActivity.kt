@@ -56,7 +56,9 @@ class PostRequestActivity : AppCompatActivity() {
 
     private val httpClient by lazy {
         OkHttpClient.Builder()
-            .callTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(90, TimeUnit.SECONDS)
+            .callTimeout(120, TimeUnit.SECONDS)
             .build()
     }
 
