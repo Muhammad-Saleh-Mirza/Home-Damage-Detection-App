@@ -19,15 +19,16 @@
         android:gravity="top"
         android:visibility="gone">
 
-        <TextView
-            android:id="@+id/tvAvatar"
+        <ImageView
+            android:id="@+id/ivAvatar"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:gravity="center"
-            android:text="🤖"
-            android:textSize="18sp"
             android:layout_marginEnd="6dp"
-            android:layout_marginTop="2dp" />
+            android:layout_marginTop="2dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_chatbot"
+            android:clipToOutline="true"
+            android:background="@drawable/bg_circle_avatar" />
 
         <LinearLayout
             android:id="@+id/bubbleBot"

@@ -1,6 +1,10 @@
 ﻿package com.example.fixup.customer
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -11,18 +15,24 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.media.RingtoneManager
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.fixup.R
 import com.example.fixup.auth.LoginActivity
 import com.example.fixup.databinding.ActivityCustomerHomeBinding
 import com.example.fixup.databinding.ItemRequestBinding
 import com.example.fixup.shared.ChatActivity
 import com.example.fixup.shared.ChatbotActivity
+import com.example.fixup.shared.TrackingActivity
 import com.example.fixup.utils.Constants
+import com.example.fixup.utils.LocaleHelper
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -37,6 +47,8 @@ class CustomerHomeActivity : AppCompatActivity() {
     private val db   = FirebaseFirestore.getInstance()
 
     private var currentUserName = ""
+    private var cachedProfilePicUrl = ""
+    private var toolbarAvatarView: ImageView? = null
 
     private val requests = mutableListOf<ServiceRequest>()
     private lateinit var adapter: RequestsAdapter
@@ -53,8 +65,14 @@ class CustomerHomeActivity : AppCompatActivity() {
         val acceptedVendorId: String,
         val acceptedVendorName: String,
         val acceptedBidAmount: Int,
-        val createdAt: Timestamp?
+        val createdAt: Timestamp?,
+        val isVendorEnRoute: Boolean = false,
+        val isPaid: Boolean = false
     )
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,12 +90,13 @@ class CustomerHomeActivity : AppCompatActivity() {
             },
             onActionClick = { req ->
                 when (req.status) {
-                    "completed" -> checkAndRate(req)
+                    "completed" -> if (!req.isPaid) payNow(req) else checkAndRate(req)
                     "assigned"  -> openChat(req)
                     else        -> openBids(req)
                 }
             },
-            onDeleteClick = { req, position -> confirmDeleteRequest(req, position) }
+            onDeleteClick = { req, position -> confirmDeleteRequest(req, position) },
+            onChatClick   = { req -> openChat(req) }
         )
         binding.recyclerRequests.layoutManager = LinearLayoutManager(this)
         binding.recyclerRequests.adapter = adapter
@@ -91,21 +110,40 @@ class CustomerHomeActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_logout, menu)
+        toolbarAvatarView = menu.findItem(R.id.action_profile_avatar)
+            ?.actionView?.findViewById(R.id.ivAvatarToolbar)
+        loadAvatarImage(cachedProfilePicUrl)
         return true
     }
 
+    private fun loadAvatarImage(url: String) {
+        cachedProfilePicUrl = url
+        val iv = toolbarAvatarView ?: return
+        Glide.with(this)
+            .load(if (url.isNotEmpty()) url else R.drawable.ic_person_placeholder)
+            .circleCrop()
+            .placeholder(R.drawable.ic_person_placeholder)
+            .error(R.drawable.ic_person_placeholder)
+            .into(iv)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_language) {
+            LocaleHelper.toggleAndApply(this)
+            recreate()
+            return true
+        }
         if (item.itemId == R.id.action_logout) {
             AlertDialog.Builder(this)
-                .setTitle("Logout")
-                .setMessage("Are you sure you want to logout?")
-                .setPositiveButton("Logout") { _, _ ->
+                .setTitle(getString(R.string.dialog_logout_title))
+                .setMessage(getString(R.string.dialog_logout_msg))
+                .setPositiveButton(getString(R.string.dialog_logout_title)) { _, _ ->
                     auth.signOut()
                     startActivity(Intent(this, LoginActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     })
                 }
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.dialog_cancel), null)
                 .show()
             return true
         }
@@ -123,6 +161,7 @@ class CustomerHomeActivity : AppCompatActivity() {
                     supportActionBar?.subtitle = currentUserName
                     binding.tvWelcomeGreeting.text = "Welcome, $currentUserName!"
                 }
+                loadAvatarImage(doc.getString("profilePictureUrl") ?: "")
             }
 
         snapshotListener = db.collection(Constants.COLLECTION_REQUESTS)
@@ -141,7 +180,9 @@ class CustomerHomeActivity : AppCompatActivity() {
                             acceptedVendorId    = doc.getString("acceptedVendorId") ?: "",
                             acceptedVendorName  = doc.getString("acceptedVendorName") ?: "",
                             acceptedBidAmount   = doc.getLong("acceptedBidAmount")?.toInt() ?: 0,
-                            createdAt           = doc.getTimestamp("createdAt")
+                            createdAt           = doc.getTimestamp("createdAt"),
+                            isVendorEnRoute     = doc.getBoolean("isVendorEnRoute") ?: false,
+                            isPaid              = doc.getBoolean("isPaid") ?: false
                         )
                     )
                 }
@@ -218,6 +259,15 @@ class CustomerHomeActivity : AppCompatActivity() {
         })
     }
 
+    private fun payNow(req: ServiceRequest) {
+        startActivity(Intent(this, PaymentActivity::class.java).apply {
+            putExtra("requestId",  req.id)
+            putExtra("vendorId",   req.acceptedVendorId)
+            putExtra("vendorName", req.acceptedVendorName.ifEmpty { "Vendor" })
+            putExtra("amount",     req.acceptedBidAmount)
+        })
+    }
+
     private fun checkAndRate(req: ServiceRequest) {
         startActivity(Intent(this, RateVendorActivity::class.java).apply {
             putExtra("requestId", req.id)
@@ -225,11 +275,32 @@ class CustomerHomeActivity : AppCompatActivity() {
         })
     }
 
+    @SuppressLint("MissingPermission")
+    private fun openTracking(req: ServiceRequest) {
+        fun launch(lat: Double, lon: Double) {
+            startActivity(Intent(this, TrackingActivity::class.java).apply {
+                putExtra("requestId",         req.id)
+                putExtra("vendorId",          req.acceptedVendorId)
+                putExtra("vendorName",        req.acceptedVendorName.ifEmpty { "Vendor" })
+                putExtra("customerLatitude",  lat)
+                putExtra("customerLongitude", lon)
+            })
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.getFusedLocationProviderClient(this).lastLocation
+                .addOnSuccessListener { loc -> launch(loc?.latitude ?: 0.0, loc?.longitude ?: 0.0) }
+                .addOnFailureListener { launch(0.0, 0.0) }
+        } else {
+            launch(0.0, 0.0)
+        }
+    }
+
     private fun confirmDeleteRequest(req: ServiceRequest, position: Int) {
         AlertDialog.Builder(this)
-            .setTitle("Delete Request")
-            .setMessage("Delete \"${req.title}\"? This cannot be undone.")
-            .setPositiveButton("Delete") { _, _ ->
+            .setTitle(getString(R.string.dialog_delete_request_title))
+            .setMessage(getString(R.string.dialog_delete_request_msg, req.title))
+            .setPositiveButton(getString(R.string.dialog_delete_positive)) { _, _ ->
                 playDeleteSound()
                 if (position < requests.size) {
                     requests.removeAt(position)
@@ -241,7 +312,7 @@ class CustomerHomeActivity : AppCompatActivity() {
                         Toast.makeText(this, "Failed to delete: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.dialog_cancel), null)
             .show()
     }
 
@@ -258,7 +329,8 @@ class CustomerHomeActivity : AppCompatActivity() {
         private val items: List<ServiceRequest>,
         private val onCardClick: (ServiceRequest) -> Unit,
         private val onActionClick: (ServiceRequest) -> Unit,
-        private val onDeleteClick: (ServiceRequest, Int) -> Unit
+        private val onDeleteClick: (ServiceRequest, Int) -> Unit,
+        private val onChatClick: (ServiceRequest) -> Unit
     ) : RecyclerView.Adapter<RequestsAdapter.VH>() {
 
         inner class VH(val b: ItemRequestBinding) : RecyclerView.ViewHolder(b.root)
@@ -274,7 +346,12 @@ class CustomerHomeActivity : AppCompatActivity() {
                 tvTitle.text   = req.title
                 tvService.text = req.detectedCategory
 
-                tvStatus.text = req.status.replaceFirstChar(Char::uppercase)
+                tvStatus.text = when (req.status) {
+                    "open"      -> getString(R.string.status_open)
+                    "assigned"  -> getString(R.string.status_assigned)
+                    "completed" -> getString(R.string.status_completed)
+                    else        -> req.status.replaceFirstChar(Char::uppercase)
+                }
                 val badgeColor = when (req.status) {
                     "open"      -> Color.parseColor("#4CAF50")
                     "assigned"  -> Color.parseColor("#FF9800")
@@ -292,14 +369,22 @@ class CustomerHomeActivity : AppCompatActivity() {
                 } ?: "Just now"
 
                 if (req.acceptedVendorName.isNotEmpty() && req.status != "open") {
-                    tvAssignedTo.text = "👷 Assigned to: ${req.acceptedVendorName}"
+                    tvAssignedTo.text = getString(R.string.label_assigned_to, req.acceptedVendorName)
                     tvAssignedTo.visibility = View.VISIBLE
                 } else {
                     tvAssignedTo.visibility = View.GONE
                 }
 
+                // Track Location button — visible when assigned and vendor is en route
+                if (req.status == "assigned" && req.isVendorEnRoute) {
+                    btnTrackLocation.visibility = View.VISIBLE
+                    btnTrackLocation.setOnClickListener { openTracking(req) }
+                } else {
+                    btnTrackLocation.visibility = View.GONE
+                }
+
                 if (req.acceptedBidAmount > 0 && req.status != "open") {
-                    tvAcceptedAmount.text = "✅ Accepted Bid: PKR ${String.format(Locale.US, "%,d", req.acceptedBidAmount)}"
+                    tvAcceptedAmount.text = getString(R.string.label_accepted_bid, String.format(Locale.US, "%,d", req.acceptedBidAmount))
                     tvAcceptedAmount.visibility = View.VISIBLE
                 } else {
                     tvAcceptedAmount.visibility = View.GONE
@@ -325,14 +410,25 @@ class CustomerHomeActivity : AppCompatActivity() {
                     tvRated.visibility   = View.GONE
                     btnAction.visibility = View.VISIBLE
                     val (btnText, btnColor) = when (req.status) {
-                        "open"      -> "View Bids"   to "#4CAF50"
-                        "assigned"  -> "Open Chat"   to "#1976D2"
-                        "completed" -> "Rate Vendor"  to "#FF9800"
-                        else        -> "View"         to "#4CAF50"
+                        "open"      -> getString(R.string.btn_view_bids_action)   to "#4CAF50"
+                        "assigned"  -> getString(R.string.btn_open_chat_action)   to "#1976D2"
+                        "completed" -> if (!req.isPaid)
+                            getString(R.string.btn_pay_now_action) to "#4CAF50"
+                        else
+                            getString(R.string.btn_rate_vendor_action) to "#FF9800"
+                        else        -> getString(R.string.btn_view)               to "#4CAF50"
                     }
                     btnAction.text = btnText
                     btnAction.backgroundTintList = ColorStateList.valueOf(Color.parseColor(btnColor))
                     btnAction.setOnClickListener { onActionClick(req) }
+                }
+
+                // Secondary chat button — keep chat accessible on completed jobs
+                if (req.status == "completed" && req.acceptedVendorId.isNotEmpty()) {
+                    btnChat.visibility = View.VISIBLE
+                    btnChat.setOnClickListener { onChatClick(req) }
+                } else {
+                    btnChat.visibility = View.GONE
                 }
 
                 root.setOnClickListener { onCardClick(req) }

@@ -98,6 +98,18 @@
             app:strokeColor="@color/colorError"
             app:cornerRadius="8dp" />
 
+        <!-- Shown when status=assigned and vendor is en route -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTrackLocation"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginBottom="6dp"
+            android:text="@string/btn_track_vendor"
+            android:textAllCaps="false"
+            android:textSize="14sp"
+            android:visibility="gone"
+            app:cornerRadius="8dp" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAction"
             android:layout_width="match_parent"
@@ -117,6 +129,20 @@
             android:textStyle="bold"
             android:gravity="center"
             android:visibility="gone" />
+
+        <!-- Secondary chat button shown on completed jobs so conversation stays accessible -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnChat"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="6dp"
+            android:text="💬 Chat with Vendor"
+            android:textAllCaps="false"
+            android:textSize="13sp"
+            android:visibility="gone"
+            app:strokeColor="@color/colorPrimary"
+            app:cornerRadius="8dp" />
 
     </LinearLayout>
 

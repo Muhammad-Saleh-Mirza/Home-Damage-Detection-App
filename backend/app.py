@@ -11,7 +11,8 @@ app = Flask(__name__)
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
 
-def get_ai_price_estimate(detected_class, confidence, description, city, base_price):
+def get_ai_price_estimate(detected_class, confidence, description, city, base_price, lang="en"):
+    urdu_note = "\nIMPORTANT: Write the 'justification' value in Urdu language only." if lang == "ur" else ""
     prompt = f"""You are a Pakistani home repair pricing expert in {city}.
 
 Job details:
@@ -26,7 +27,7 @@ Your task: estimate min, max, and recommended price for THIS specific job.
 Rules:
 - Your numbers MUST be within PKR {base_price['min']} and PKR {base_price['max']}
 - Adjust within that range based on severity in the description
-- Mild damage = closer to PKR {base_price['min']}, severe = closer to PKR {base_price['max']}
+- Mild damage = closer to PKR {base_price['min']}, severe = closer to PKR {base_price['max']}{urdu_note}
 
 Reply with ONLY this JSON, no other text:
 {{"min": PUT_MIN_HERE, "max": PUT_MAX_HERE, "recommended": PUT_RECOMMENDED_HERE, "justification": "PUT_ONE_SENTENCE_HERE"}}"""
@@ -64,12 +65,13 @@ def predict_route():
 
     description = request.form.get("description", "No description provided")
     city        = request.form.get("city", "Karachi")
+    lang        = request.form.get("lang", "en")
 
     result     = predict(request.files["image"].read())
     base_price = get_base_price(result["service"], city)
     ai_price   = get_ai_price_estimate(
         result["detected"], result["confidence"],
-        description, city, base_price,
+        description, city, base_price, lang,
     )
 
     return jsonify({

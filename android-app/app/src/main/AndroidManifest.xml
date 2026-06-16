@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -47,6 +48,7 @@
         <activity android:name=".customer.BidsActivity"/>
         <activity android:name=".customer.RequestStatusActivity"/>
         <activity android:name=".customer.RateVendorActivity"/>
+        <activity android:name=".customer.PaymentActivity"/>
         <activity android:name=".vendor.VendorDashboardActivity"
             android:exported="true"/>
         <activity android:name=".vendor.RequestDetailActivity"/>
@@ -60,6 +62,11 @@
         <activity
             android:name=".shared.ChatbotActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".shared.TrackingActivity" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -75,7 +75,7 @@
                                     android:id="@+id/tvWelcomeGreeting"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Welcome to FixUp!"
+                                    android:text="@string/tv_welcome"
                                     android:textSize="18sp"
                                     android:textStyle="bold"
                                     android:textColor="@color/white" />
@@ -83,7 +83,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Your home repair solution"
+                                    android:text="@string/tv_home_subtitle"
                                     android:textSize="13sp"
                                     android:textColor="#CCFFFFFF"
                                     android:layout_marginTop="4dp" />
@@ -102,7 +102,7 @@
                         android:id="@+id/btnPostRequest"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
-                        android:text="+ Post New Request"
+                        android:text="@string/btn_post_request"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textAllCaps="false"
@@ -115,7 +115,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="📷 Photograph damage  →  AI detects type  →  vendors bid  →  you choose best deal"
+                        android:text="@string/tv_how_it_works"
                         android:textSize="13sp"
                         android:textColor="@color/textSecondary"
                         android:gravity="center"
@@ -147,7 +147,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="My Requests"
+                        android:text="@string/tv_my_requests"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@color/textPrimary" />
@@ -201,7 +201,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="No requests yet"
+                            android:text="@string/tv_no_requests"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="@color/textPrimary"
@@ -211,7 +211,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Post your first repair request to get started"
+                            android:text="@string/tv_no_requests_hint"
                             android:textSize="13sp"
                             android:textColor="@color/textSecondary"
                             android:gravity="center" />

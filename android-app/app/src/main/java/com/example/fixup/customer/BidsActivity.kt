@@ -1,5 +1,6 @@
 package com.example.fixup.customer
 
+import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Bundle
@@ -13,11 +14,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.fixup.R
 import com.example.fixup.databinding.ActivityBidsBinding
 import com.example.fixup.databinding.ItemBidBinding
 import com.example.fixup.shared.ChatActivity
 import com.example.fixup.utils.Constants
+import com.example.fixup.utils.LocaleHelper
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import java.util.Locale
@@ -46,8 +49,13 @@ class BidsActivity : AppCompatActivity() {
         val amount: Int,
         val estimatedHours: Double,
         val note: String,
-        val status: String
+        val status: String,
+        val vendorProfilePicUrl: String = ""
     )
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,14 +132,15 @@ class BidsActivity : AppCompatActivity() {
                     if (doc.getString("status") == "rejected") continue
                     bids.add(
                         Bid(
-                            id             = doc.id,
-                            vendorId       = doc.getString("vendorId") ?: "",
-                            vendorName     = doc.getString("vendorName") ?: "Vendor",
-                            vendorRating   = doc.getDouble("vendorRating") ?: 0.0,
-                            amount         = doc.getLong("amount")?.toInt() ?: 0,
-                            estimatedHours = doc.getDouble("estimatedHours") ?: 1.0,
-                            note           = doc.getString("note") ?: "",
-                            status         = doc.getString("status") ?: "pending"
+                            id                  = doc.id,
+                            vendorId            = doc.getString("vendorId") ?: "",
+                            vendorName          = doc.getString("vendorName") ?: "Vendor",
+                            vendorRating        = doc.getDouble("vendorRating") ?: 0.0,
+                            amount              = doc.getLong("amount")?.toInt() ?: 0,
+                            estimatedHours      = doc.getDouble("estimatedHours") ?: 1.0,
+                            note                = doc.getString("note") ?: "",
+                            status              = doc.getString("status") ?: "pending",
+                            vendorProfilePicUrl = doc.getString("vendorProfilePicUrl") ?: ""
                         )
                     )
                 }
@@ -167,10 +176,10 @@ class BidsActivity : AppCompatActivity() {
 
     private fun confirmAccept(bid: Bid) {
         AlertDialog.Builder(this)
-            .setTitle("Accept Bid?")
-            .setMessage("Accept ${bid.vendorName}'s bid of PKR ${String.format(Locale.US, "%,d", bid.amount)}?")
-            .setPositiveButton("Accept") { _, _ -> acceptBid(bid) }
-            .setNegativeButton("Cancel", null)
+            .setTitle(getString(R.string.dialog_accept_bid_title))
+            .setMessage(getString(R.string.dialog_accept_bid_msg, bid.vendorName, String.format(Locale.US, "%,d", bid.amount)))
+            .setPositiveButton(getString(R.string.dialog_accept_positive)) { _, _ -> acceptBid(bid) }
+            .setNegativeButton(getString(R.string.dialog_cancel), null)
             .show()
     }
 
@@ -208,9 +217,9 @@ class BidsActivity : AppCompatActivity() {
                     RingtoneManager.getRingtone(this, uri)?.play()
                 } catch (_: Exception) { }
                 AlertDialog.Builder(this)
-                    .setTitle("Bid Accepted!")
-                    .setMessage("You are now connected with ${bid.vendorName}. A chat has been opened so you can coordinate the repair.")
-                    .setPositiveButton("Open Chat") { _, _ ->
+                    .setTitle(getString(R.string.dialog_bid_accepted_title))
+                    .setMessage(getString(R.string.dialog_bid_accepted_customer_msg, bid.vendorName))
+                    .setPositiveButton(getString(R.string.dialog_open_chat)) { _, _ ->
                         startActivity(Intent(this, ChatActivity::class.java).apply {
                             putExtra("requestId",  requestId)
                             putExtra("vendorId",   bid.vendorId)
@@ -246,6 +255,15 @@ class BidsActivity : AppCompatActivity() {
                 )
             }
             with(holder.b) {
+                if (bid.vendorProfilePicUrl.isNotEmpty()) {
+                    ivVendorAvatar.visibility = View.VISIBLE
+                    Glide.with(this@BidsActivity)
+                        .load(bid.vendorProfilePicUrl)
+                        .circleCrop()
+                        .into(ivVendorAvatar)
+                } else {
+                    ivVendorAvatar.visibility = View.GONE
+                }
                 tvVendorName.text = bid.vendorName
                 tvRating.text     = "⭐ ${String.format(Locale.US, "%.1f", bid.vendorRating)}"
                 tvAmount.text     = "PKR ${String.format(Locale.US, "%,d", bid.amount)}"

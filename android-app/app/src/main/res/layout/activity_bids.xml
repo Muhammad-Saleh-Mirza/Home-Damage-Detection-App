@@ -121,7 +121,7 @@
                     android:id="@+id/tvEmpty"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No bids yet"
+                    android:text="@string/tv_no_bids"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/textPrimary"
@@ -131,7 +131,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Vendors will bid on your request soon"
+                    android:text="@string/tv_no_bids_hint"
                     android:textSize="13sp"
                     android:textColor="@color/textSecondary"
                     android:gravity="center" />

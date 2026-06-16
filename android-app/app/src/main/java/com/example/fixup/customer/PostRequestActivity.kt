@@ -1,6 +1,7 @@
 package com.example.fixup.customer
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -20,7 +21,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.example.fixup.databinding.ActivityPostRequestBinding
+import com.example.fixup.R
 import com.example.fixup.utils.Constants
+import com.example.fixup.utils.LocaleHelper
 import com.example.fixup.utils.ImageUtils
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -149,6 +152,10 @@ class PostRequestActivity : AppCompatActivity() {
 
     // ── Lifecycle ──────────────────────────────────────────────────────────────
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPostRequestBinding.inflate(layoutInflater)
@@ -241,6 +248,7 @@ class PostRequestActivity : AppCompatActivity() {
 
         Thread {
             try {
+                val lang = LocaleHelper.getSavedLanguage(this)
                 val requestBody = MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart(
@@ -249,6 +257,7 @@ class PostRequestActivity : AppCompatActivity() {
                     )
                     .addFormDataPart("description", description)
                     .addFormDataPart("city", city)
+                    .addFormDataPart("lang", lang)
                     .build()
 
                 val request = Request.Builder()
@@ -293,13 +302,33 @@ class PostRequestActivity : AppCompatActivity() {
     }
 
     private fun displayAiResult(result: AiResult) {
-        val label = result.detected.replace("_", " ")
-            .split(" ").joinToString(" ") { it.replaceFirstChar(Char::titlecase) }
+        val isUrdu = LocaleHelper.getSavedLanguage(this) == LocaleHelper.LANG_UR
         val confPct = (result.confidence * 100).toInt()
         val fmt = "%,d"
 
-        binding.tvDetectedClass.text   = "${result.icon} $label Detected"
-        binding.tvDetectedService.text = "Suggested Service: ${result.service}"
+        val classLabel = if (isUrdu)
+            Constants.DETECTED_CLASS_URDU[result.detected] ?: result.detected.replace("_", " ")
+                .split(" ").joinToString(" ") { it.replaceFirstChar(Char::titlecase) }
+        else
+            result.detected.replace("_", " ")
+                .split(" ").joinToString(" ") { it.replaceFirstChar(Char::titlecase) }
+
+        val serviceLabel = if (isUrdu)
+            Constants.SERVICE_CATEGORY_URDU[result.service] ?: result.service
+        else
+            result.service
+
+        val suggestedPrefix = if (isUrdu) "تجویز کردہ سروس:" else "Suggested Service:"
+        val sourceText = if (isUrdu) {
+            if (result.sampleCount > 0) "${result.sampleCount} حالیہ بولیوں + AI تجزیہ پر مبنی"
+            else "مارکیٹ ڈیٹا + AI تجزیہ پر مبنی"
+        } else {
+            if (result.sampleCount > 0) "Based on ${result.sampleCount} recent bids + AI analysis"
+            else "Based on market rates + AI analysis"
+        }
+
+        binding.tvDetectedClass.text   = "${result.icon} $classLabel"
+        binding.tvDetectedService.text = "$suggestedPrefix $serviceLabel"
         binding.tvConfidence.text      = "$confPct%"
         binding.confidenceBar.progress = confPct
 
@@ -307,10 +336,7 @@ class PostRequestActivity : AppCompatActivity() {
         binding.tvPriceMax.text         = "PKR ${String.format(Locale.US, fmt, result.priceMax)}"
         binding.tvPriceRecommended.text = "PKR ${String.format(Locale.US, fmt, result.priceRecommended)}"
         binding.tvPriceReason.text      = "\"${result.priceReason}\""
-        binding.tvPriceSource.text      = if (result.sampleCount > 0)
-            "Based on ${result.sampleCount} recent bids + AI analysis"
-        else
-            "Based on market rates + AI analysis"
+        binding.tvPriceSource.text      = sourceText
 
         binding.cardResult.visibility     = View.VISIBLE
         binding.btnPostRequest.visibility = View.VISIBLE
@@ -402,9 +428,9 @@ class PostRequestActivity : AppCompatActivity() {
                             putExtra("requestTitle", data["title"] as String)
                         }
                         AlertDialog.Builder(this)
-                            .setTitle("Request Posted!")
-                            .setMessage("Your repair request has been posted successfully. Verified vendors in your area will now see it and can submit bids.")
-                            .setPositiveButton("View Bids") { _, _ ->
+                            .setTitle(getString(R.string.dialog_request_posted_title))
+                            .setMessage(getString(R.string.dialog_request_posted_msg))
+                            .setPositiveButton(getString(R.string.dialog_view_bids_action)) { _, _ ->
                                 startActivity(intent)
                                 finish()
                             }

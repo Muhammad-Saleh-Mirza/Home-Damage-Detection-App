@@ -1,5 +1,6 @@
 package com.example.fixup.customer
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -7,8 +8,10 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.fixup.R
 import com.example.fixup.databinding.ActivityRateVendorBinding
 import com.example.fixup.utils.Constants
+import com.example.fixup.utils.LocaleHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,6 +26,10 @@ class RateVendorActivity : AppCompatActivity() {
 
     private lateinit var requestId: String
     private lateinit var vendorId: String
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +53,7 @@ class RateVendorActivity : AppCompatActivity() {
     private fun submitRating() {
         val score = binding.ratingBar.rating.toInt()
         if (score == 0) {
-            Toast.makeText(this, "Please select a star rating.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.toast_select_star), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -95,9 +102,9 @@ class RateVendorActivity : AppCompatActivity() {
                     .addOnSuccessListener {
                         setLoading(false)
                         AlertDialog.Builder(this)
-                            .setTitle("Thank You!")
-                            .setMessage("Your rating has been submitted. Your feedback helps other customers find the best vendors.")
-                            .setPositiveButton("Done") { _, _ ->
+                            .setTitle(getString(R.string.dialog_thankyou_title))
+                            .setMessage(getString(R.string.dialog_thankyou_msg))
+                            .setPositiveButton(getString(R.string.dialog_done)) { _, _ ->
                                 startActivity(
                                     Intent(this, CustomerHomeActivity::class.java).apply {
                                         flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP

@@ -43,6 +43,19 @@
             android:paddingTop="8dp"
             android:paddingBottom="8dp" />
 
+        <!-- Vendor only: start journey -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnStartJourney"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/btn_start_journey"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            app:cornerRadius="8dp" />
+
         <!-- Vendor only: mark complete -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnMarkComplete"
@@ -52,11 +65,24 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="4dp"
-            android:text="✓ Mark Job Complete"
+            android:text="@string/btn_mark_complete"
             android:textAllCaps="false"
             android:visibility="gone"
             app:strokeColor="@color/colorAccent"
             android:textColor="@color/colorAccent" />
+
+        <!-- Customer only: track vendor -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTrackVendor"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/btn_track_vendor"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            app:cornerRadius="8dp" />
 
         <!-- Customer only: rate vendor -->
         <com.google.android.material.button.MaterialButton
@@ -67,7 +93,7 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="4dp"
-            android:text="⭐ Rate Vendor"
+            android:text="@string/btn_rate_vendor"
             android:textAllCaps="false"
             android:visibility="gone"
             app:strokeColor="@color/colorAccent"
@@ -88,7 +114,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Type a message…"
+                android:hint="@string/hint_message"
                 app:boxCornerRadiusTopStart="24dp"
                 app:boxCornerRadiusTopEnd="24dp"
                 app:boxCornerRadiusBottomStart="24dp"

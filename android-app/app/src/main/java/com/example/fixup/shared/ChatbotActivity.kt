@@ -1,5 +1,6 @@
 package com.example.fixup.shared
 
+import android.content.Context
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.graphics.Color
@@ -15,9 +16,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.fixup.R
 import com.example.fixup.databinding.ActivityChatbotBinding
 import com.example.fixup.databinding.ItemChatbotMessageBinding
 import com.example.fixup.utils.Constants
+import com.example.fixup.utils.LocaleHelper
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -34,14 +37,17 @@ class ChatbotActivity : AppCompatActivity() {
     private val history  = mutableListOf<Pair<String, String>>()  // ("user"/"assistant", text)
     private lateinit var adapter: ChatbotAdapter
 
-    private val WELCOME = "Hi! I'm the FixUp Assistant. I can help you identify home damage, " +
-            "estimate repair costs, and choose the right service. What problem are you facing today?"
+    private val WELCOME get() = getString(R.string.chatbot_welcome)
 
     data class ChatMessage(
         val text: String,
         val isUser: Boolean,
         val isTyping: Boolean = false
     )
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,9 +88,9 @@ class ChatbotActivity : AppCompatActivity() {
     }
 
     private fun setupChips() {
-        binding.chipEstimate.setOnClickListener  { sendChip("Estimate repair cost") }
-        binding.chipFairPrice.setOnClickListener { sendChip("Is my price fair?") }
-        binding.chipService.setOnClickListener   { sendChip("What service do I need?") }
+        binding.chipEstimate.setOnClickListener  { sendChip(getString(R.string.chip_estimate)) }
+        binding.chipFairPrice.setOnClickListener { sendChip(getString(R.string.chip_fair_price)) }
+        binding.chipService.setOnClickListener   { sendChip(getString(R.string.chip_service)) }
     }
 
     private fun sendChip(text: String) {

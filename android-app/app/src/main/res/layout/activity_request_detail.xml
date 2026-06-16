@@ -129,7 +129,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="AI Analysis"
+                            android:text="@string/label_ai_analysis"
                             android:textSize="12sp"
                             android:textAllCaps="true"
                             android:textColor="?attr/colorPrimary"
@@ -213,7 +213,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Submit Your Bid"
+                            android:text="@string/title_submit_bid"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="@android:color/black"
@@ -224,7 +224,7 @@
                             android:id="@+id/tvAlreadyBid"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="✓ You have already submitted a bid on this request."
+                            android:text="@string/tv_already_bid"
                             android:textSize="14sp"
                             android:textColor="#4CAF50"
                             android:gravity="center"
@@ -242,7 +242,7 @@
                                 android:id="@+id/etAmount"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="Bid Amount (PKR)"
+                                android:hint="@string/hint_bid_amount"
                                 android:inputType="number"
                                 android:background="@android:drawable/edit_text"
                                 android:padding="10dp" />
@@ -251,7 +251,7 @@
                                 android:id="@+id/etHours"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="Estimated Hours (e.g. 2.5)"
+                                android:hint="@string/hint_estimated_hours"
                                 android:inputType="numberDecimal"
                                 android:background="@android:drawable/edit_text"
                                 android:padding="10dp"
@@ -261,7 +261,7 @@
                                 android:id="@+id/etNote"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="Note / message to customer (optional)"
+                                android:hint="@string/hint_note"
                                 android:inputType="textMultiLine"
                                 android:minLines="2"
                                 android:gravity="top"
@@ -282,7 +282,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
-                                android:text="Submit Bid"
+                                android:text="@string/btn_submit_bid"
                                 android:textAllCaps="false" />
 
                         </LinearLayout>

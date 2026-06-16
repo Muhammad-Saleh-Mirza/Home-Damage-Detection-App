@@ -1,0 +1,180 @@
+<resources>
+    <string name="app_name">FixUp</string>
+    <string name="app_tagline">آپ کا گھر، ہماری ذمہ داری</string>
+
+    <!-- Login -->
+    <string name="hint_email">ای میل</string>
+    <string name="hint_password">پاس ورڈ</string>
+    <string name="btn_login">لاگ ان</string>
+    <string name="btn_create_account">اکاؤنٹ بنائیں</string>
+    <string name="tv_forgot_password">پاس ورڈ بھول گئے؟</string>
+
+    <!-- Register -->
+    <string name="title_create_account">اکاؤنٹ بنائیں</string>
+    <string name="tv_join_fixup">آج FixUp سے جڑیں</string>
+    <string name="tv_add_photo">تصویر شامل کریں (اختیاری)</string>
+    <string name="hint_full_name">پورا نام</string>
+    <string name="hint_phone">فون نمبر (11 ہندسے)</string>
+    <string name="hint_cnic">شناختی کارڈ نمبر (13 ہندسے)</string>
+    <string name="tv_i_am_a">میں ہوں:</string>
+    <string name="tv_need_services">مجھے خدمات چاہئیں</string>
+    <string name="tv_provide_services">میں خدمات فراہم کرتا ہوں</string>
+    <string name="hint_service_category">سروس کیٹیگری</string>
+    <string name="btn_register">اکاؤنٹ بنائیں</string>
+    <string name="tv_sign_in">پہلے سے اکاؤنٹ ہے؟ سائن ان کریں</string>
+
+    <!-- Customer Home -->
+    <string name="tv_welcome">FixUp میں خوش آمدید!</string>
+    <string name="tv_home_subtitle">آپ کے گھر کی مرمت کا حل</string>
+    <string name="btn_post_request">+ نئی درخواست پوسٹ کریں</string>
+    <string name="tv_how_it_works">📷 نقصان کی تصویر → AI پتہ لگائے → ٹھیکیدار بولی لگائیں → بہترین ڈیل چنیں</string>
+    <string name="tv_my_requests">میری درخواستیں</string>
+    <string name="tv_no_requests">ابھی تک کوئی درخواست نہیں</string>
+    <string name="tv_no_requests_hint">شروع کرنے کے لیے اپنی پہلی مرمت کی درخواست پوسٹ کریں</string>
+
+    <!-- Post Request -->
+    <string name="title_post_request">نئی درخواست پوسٹ کریں</string>
+    <string name="tv_photo_tips">📷 تصویر کی تجاویز</string>
+    <string name="tv_photo_tips_body">🧱 دیوار کی دراڑ → دراڑ کی قریب سے تصویر لیں\n💧 نمی / کائی → متاثرہ دیوار کی تصویر لیں\n⚡ بجلی کا مسئلہ → خراب ساکٹ یا تار کی تصویر لیں\n🎨 پینٹ کا نقصان → اکھڑے ہوئے حصے کی تصویر لیں\n🧱 سطح کا ٹوٹنا → ٹوٹتی ہوئی سطح کی تصویر لیں</string>
+    <string name="tv_take_or_choose">تصویر لیں یا چنیں</string>
+    <string name="btn_camera">📷 کیمرہ</string>
+    <string name="btn_gallery">🖼 گیلری</string>
+    <string name="hint_description">نقصان بیان کریں (سائز، شدت…)</string>
+    <string name="hint_city">شہر</string>
+    <string name="btn_analyze">✨ تجزیہ کریں اور قیمت لگائیں</string>
+    <string name="tv_analyzing">نقصان کا تجزیہ ہو رہا ہے...</string>
+    <string name="label_min">کم از کم</string>
+    <string name="label_recommended">تجویز کردہ</string>
+    <string name="label_max">زیادہ سے زیادہ</string>
+    <string name="btn_confirm_post">تصدیق کریں اور پوسٹ کریں</string>
+
+    <!-- Bids -->
+    <string name="title_bids">بولیاں</string>
+    <string name="tv_no_bids">ابھی تک کوئی بولی نہیں</string>
+    <string name="tv_no_bids_hint">ٹھیکیدار جلد آپ کی درخواست پر بولی لگائیں گے</string>
+    <string name="btn_accept_bid">بولی قبول کریں</string>
+
+    <!-- Vendor Dashboard -->
+    <string name="tv_hello_vendor">ہیلو، ٹھیکیدار!</string>
+    <string name="tv_no_jobs_available">ابھی کوئی کام دستیاب نہیں۔</string>
+    <string name="tv_no_jobs_hint">آپ کی کیٹیگری کے نئے کام یہاں نظر آئیں گے۔</string>
+    <string name="tv_no_my_jobs">ابھی کوئی تفویض شدہ کام نہیں۔</string>
+    <string name="tv_no_my_jobs_hint">گاہک کی بولی قبولیت کے بعد کام یہاں نظر آئیں گے۔</string>
+    <string name="tv_location_banner">📍 قریبی کام دیکھنے کے لیے ترتیبات میں مقام فعال کریں</string>
+
+    <!-- Request Detail -->
+    <string name="title_request_detail">درخواست کی تفصیل</string>
+    <string name="label_ai_analysis">AI تجزیہ</string>
+    <string name="hint_bid_amount">بولی کی رقم (PKR)</string>
+    <string name="hint_estimated_hours">تخمینہ شدہ گھنٹے (مثلاً 2.5)</string>
+    <string name="hint_note">گاہک کو پیغام (اختیاری)</string>
+    <string name="title_submit_bid">اپنی بولی جمع کریں</string>
+    <string name="tv_already_bid">✓ آپ نے اس درخواست پر پہلے سے بولی لگائی ہے۔</string>
+    <string name="btn_submit_bid">بولی جمع کریں</string>
+
+    <!-- Chat -->
+    <string name="hint_message">پیغام لکھیں…</string>
+    <string name="btn_start_journey">🚗 سفر شروع کریں</string>
+    <string name="btn_mark_complete">✓ کام مکمل کریں</string>
+    <string name="btn_track_vendor">📍 ٹھیکیدار کو ٹریک کریں</string>
+    <string name="btn_rate_vendor">⭐ ٹھیکیدار کو ریٹ کریں</string>
+
+    <!-- Chatbot -->
+    <string name="title_chatbot">FixUp اسسٹنٹ</string>
+    <string name="chatbot_welcome">ہیلو! میں FixUp اسسٹنٹ ہوں۔ میں گھر کے نقصان کی شناخت، مرمت کی لاگت کا تخمینہ، اور صحیح سروس چننے میں آپ کی مدد کر سکتا ہوں۔ آج آپ کا کیا مسئلہ ہے؟</string>
+    <string name="chip_estimate">مرمت کی لاگت کا تخمینہ</string>
+    <string name="chip_fair_price">کیا میری قیمت مناسب ہے؟</string>
+    <string name="chip_service">مجھے کس خدمت کی ضرورت ہے؟</string>
+    <string name="hint_ask_me">کچھ بھی پوچھیں…</string>
+
+    <!-- Rate Vendor -->
+    <string name="title_rate_vendor">ٹھیکیدار کو ریٹ کریں</string>
+    <string name="tv_how_was_experience">آپ کا تجربہ کیسا رہا؟</string>
+    <string name="tv_tap_star">ٹھیکیدار کو ریٹ کرنے کے لیے ستارہ دبائیں</string>
+    <string name="hint_comment">تبصرہ چھوڑیں (اختیاری)</string>
+    <string name="btn_submit_rating">ریٹنگ جمع کریں</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">ہوم</string>
+    <string name="nav_requests">درخواستیں</string>
+    <string name="nav_chatbot">چیٹ بوٹ</string>
+    <string name="nav_available">دستیاب</string>
+    <string name="nav_my_jobs">میرے کام</string>
+
+    <!-- Menu -->
+    <string name="menu_logout">لاگ آؤٹ</string>
+    <string name="menu_language">زبان</string>
+
+    <!-- Common dialog buttons -->
+    <string name="dialog_cancel">منسوخ</string>
+    <string name="dialog_ok">ٹھیک ہے</string>
+    <string name="dialog_done">ہو گیا</string>
+    <string name="dialog_later">بعد میں</string>
+
+    <!-- Logout dialog -->
+    <string name="dialog_logout_title">لاگ آؤٹ</string>
+    <string name="dialog_logout_msg">کیا آپ واقعی لاگ آؤٹ کرنا چاہتے ہیں؟</string>
+
+    <!-- Delete request dialog -->
+    <string name="dialog_delete_request_title">درخواست حذف کریں</string>
+    <string name="dialog_delete_request_msg">\"%1$s\" حذف کریں؟ یہ واپس نہیں کیا جا سکتا۔</string>
+    <string name="dialog_delete_positive">حذف کریں</string>
+
+    <!-- Accept bid dialog -->
+    <string name="dialog_accept_bid_title">بولی قبول کریں؟</string>
+    <string name="dialog_accept_bid_msg">%1$s کی PKR %2$s بولی قبول کریں؟</string>
+    <string name="dialog_accept_positive">قبول کریں</string>
+
+    <!-- Bid accepted – customer -->
+    <string name="dialog_bid_accepted_title">بولی قبول ہو گئی!</string>
+    <string name="dialog_bid_accepted_customer_msg">آپ اب %1$s سے منسلک ہو گئے ہیں۔ مرمت کے لیے چیٹ کھل گئی ہے۔</string>
+    <string name="dialog_open_chat">چیٹ کھولیں</string>
+
+    <!-- Request posted dialog -->
+    <string name="dialog_request_posted_title">درخواست پوسٹ ہو گئی!</string>
+    <string name="dialog_request_posted_msg">آپ کی مرمت کی درخواست کامیابی سے پوسٹ ہو گئی۔ آپ کے علاقے کے ٹھیکیدار اسے دیکھ سکیں گے اور بولیاں لگائیں گے۔</string>
+    <string name="dialog_view_bids_action">بولیاں دیکھیں</string>
+
+    <!-- Rate vendor (Thank You) -->
+    <string name="dialog_thankyou_title">شکریہ!</string>
+    <string name="dialog_thankyou_msg">آپ کی ریٹنگ جمع ہو گئی۔ آپ کا تاثر دوسرے گاہکوں کو بہترین ٹھیکیدار ڈھونڈنے میں مدد کرتا ہے۔</string>
+    <string name="toast_select_star">براہ کرم ستارہ ریٹنگ منتخب کریں۔</string>
+
+    <!-- Vendor – account suspended -->
+    <string name="dialog_suspended_title">اکاؤنٹ معطل</string>
+    <string name="dialog_suspended_msg">آپ کا اکاؤنٹ ایڈمن نے معطل کر دیا ہے۔ براہ کرم سپورٹ سے رابطہ کریں۔</string>
+
+    <!-- Vendor – bid accepted notification -->
+    <string name="dialog_bid_accepted_vendor_title">🎉 بولی قبول ہو گئی!</string>
+    <string name="dialog_bid_accepted_vendor_msg">\"%1$s\" کے لیے آپ کی بولی گاہک نے قبول کر لی۔ بات چیت شروع کرنے کے لیے میرے کام پر جائیں۔</string>
+    <string name="dialog_view_my_jobs">میرے کام دیکھیں</string>
+
+    <!-- Vendor – mark job complete -->
+    <string name="dialog_mark_complete_title">کام مکمل کریں؟</string>
+    <string name="dialog_mark_complete_msg">کیا آپ \"%1$s\" کو مکمل کرنا چاہتے ہیں؟ گاہک کو اطلاع ملے گی اور وہ آپ کی سروس ریٹ کر سکے گا۔</string>
+    <string name="dialog_mark_complete_positive">ہاں، مکمل کریں</string>
+    <string name="dialog_job_complete_title">کام مکمل</string>
+    <string name="dialog_job_complete_msg">کام مکمل ہو گیا۔ اب گاہک آپ کی سروس کو ریٹ کر سکتا ہے۔</string>
+
+    <!-- Vendor – bid submitted -->
+    <string name="dialog_bid_submitted_title">بولی جمع ہو گئی!</string>
+    <string name="dialog_bid_submitted_msg">آپ کی PKR %1$s بولی جمع ہو گئی۔ گاہک کی قبولیت پر آپ کو اطلاع ملے گی۔</string>
+
+    <!-- Status labels -->
+    <string name="status_open">کھلا</string>
+    <string name="status_assigned">تفویض شدہ</string>
+    <string name="status_completed">مکمل</string>
+
+    <!-- Adapter dynamic labels -->
+    <string name="label_assigned_to">👷 تفویض کردہ: %1$s</string>
+    <string name="label_accepted_bid">✅ قبول شدہ بولی: PKR %1$s</string>
+    <string name="label_your_bid">✅ آپ کی بولی: PKR %1$s</string>
+    <string name="label_km_away">📍 %1$s کلومیٹر دور</string>
+
+    <!-- Adapter action buttons -->
+    <string name="btn_view_bids_action">بولیاں دیکھیں</string>
+    <string name="btn_open_chat_action">چیٹ کھولیں</string>
+    <string name="btn_pay_now_action">💳 ادائیگی کریں</string>
+    <string name="btn_rate_vendor_action">ٹھیکیدار کو ریٹ کریں</string>
+    <string name="btn_view">دیکھیں</string>
+</resources>

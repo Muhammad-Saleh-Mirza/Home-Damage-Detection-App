@@ -1,3 +1,180 @@
 <resources>
     <string name="app_name">FixUp</string>
+    <string name="app_tagline">Your Home, Our Priority</string>
+
+    <!-- Login -->
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="btn_login">Login</string>
+    <string name="btn_create_account">Create an Account</string>
+    <string name="tv_forgot_password">Forgot Password?</string>
+
+    <!-- Register -->
+    <string name="title_create_account">Create Account</string>
+    <string name="tv_join_fixup">Join FixUp today</string>
+    <string name="tv_add_photo">Add Photo (Optional)</string>
+    <string name="hint_full_name">Full Name</string>
+    <string name="hint_phone">Phone Number (11 digits)</string>
+    <string name="hint_cnic">CNIC Number (13 digits)</string>
+    <string name="tv_i_am_a">I am a:</string>
+    <string name="tv_need_services">I Need Services</string>
+    <string name="tv_provide_services">I Provide Services</string>
+    <string name="hint_service_category">Service Category</string>
+    <string name="btn_register">Create Account</string>
+    <string name="tv_sign_in">Already have an account? Sign in</string>
+
+    <!-- Customer Home -->
+    <string name="tv_welcome">Welcome to FixUp!</string>
+    <string name="tv_home_subtitle">Your home repair solution</string>
+    <string name="btn_post_request">+ Post New Request</string>
+    <string name="tv_how_it_works">📷 Photograph damage  →  AI detects type  →  vendors bid  →  you choose best deal</string>
+    <string name="tv_my_requests">My Requests</string>
+    <string name="tv_no_requests">No requests yet</string>
+    <string name="tv_no_requests_hint">Post your first repair request to get started</string>
+
+    <!-- Post Request -->
+    <string name="title_post_request">Post New Request</string>
+    <string name="tv_photo_tips">📷 Photo Tips</string>
+    <string name="tv_photo_tips_body">🧱 Wall crack  →  photograph crack directly, close up\n💧 Moisture / algae  →  photograph the affected wall\n⚡ Electrical issue  →  photograph damaged socket or wire\n🎨 Paint damage  →  photograph the peeling area\n🧱 Surface spalling  →  photograph the crumbling surface</string>
+    <string name="tv_take_or_choose">Take or choose a photo</string>
+    <string name="btn_camera">📷 Camera</string>
+    <string name="btn_gallery">🖼 Gallery</string>
+    <string name="hint_description">Describe the damage (size, severity…)</string>
+    <string name="hint_city">City</string>
+    <string name="btn_analyze">✨ Analyze &amp; Estimate Price</string>
+    <string name="tv_analyzing">Analyzing damage...</string>
+    <string name="label_min">Min</string>
+    <string name="label_recommended">Recommended</string>
+    <string name="label_max">Max</string>
+    <string name="btn_confirm_post">Confirm &amp; Post Request</string>
+
+    <!-- Bids -->
+    <string name="title_bids">Bids</string>
+    <string name="tv_no_bids">No bids yet</string>
+    <string name="tv_no_bids_hint">Vendors will bid on your request soon</string>
+    <string name="btn_accept_bid">Accept Bid</string>
+
+    <!-- Vendor Dashboard -->
+    <string name="tv_hello_vendor">Hello, Vendor!</string>
+    <string name="tv_no_jobs_available">No requests available right now.</string>
+    <string name="tv_no_jobs_hint">New jobs matching your category will appear here.</string>
+    <string name="tv_no_my_jobs">No assigned jobs yet.</string>
+    <string name="tv_no_my_jobs_hint">Jobs appear here once a customer accepts your bid.</string>
+    <string name="tv_location_banner">📍 Enable location in settings to see only nearby jobs</string>
+
+    <!-- Request Detail -->
+    <string name="title_request_detail">Request Detail</string>
+    <string name="label_ai_analysis">AI Analysis</string>
+    <string name="hint_bid_amount">Bid Amount (PKR)</string>
+    <string name="hint_estimated_hours">Estimated Hours (e.g. 2.5)</string>
+    <string name="hint_note">Note / message to customer (optional)</string>
+    <string name="title_submit_bid">Submit Your Bid</string>
+    <string name="tv_already_bid">✓ You have already submitted a bid on this request.</string>
+    <string name="btn_submit_bid">Submit Bid</string>
+
+    <!-- Chat -->
+    <string name="hint_message">Type a message…</string>
+    <string name="btn_start_journey">🚗 Start Journey</string>
+    <string name="btn_mark_complete">✓ Mark Job Complete</string>
+    <string name="btn_track_vendor">📍 Track Vendor</string>
+    <string name="btn_rate_vendor">⭐ Rate Vendor</string>
+
+    <!-- Chatbot -->
+    <string name="title_chatbot">FixUp Assistant</string>
+    <string name="chatbot_welcome">Hi! I\'m the FixUp Assistant. I can help you identify home damage, estimate repair costs, and choose the right service. What problem are you facing today?</string>
+    <string name="chip_estimate">Estimate repair cost</string>
+    <string name="chip_fair_price">Is my price fair?</string>
+    <string name="chip_service">What service do I need?</string>
+    <string name="hint_ask_me">Ask me anything…</string>
+
+    <!-- Rate Vendor -->
+    <string name="title_rate_vendor">Rate Vendor</string>
+    <string name="tv_how_was_experience">How was your experience?</string>
+    <string name="tv_tap_star">Tap a star to rate the vendor</string>
+    <string name="hint_comment">Leave a comment (optional)</string>
+    <string name="btn_submit_rating">Submit Rating</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_requests">Requests</string>
+    <string name="nav_chatbot">Chatbot</string>
+    <string name="nav_available">Available</string>
+    <string name="nav_my_jobs">My Jobs</string>
+
+    <!-- Menu -->
+    <string name="menu_logout">Logout</string>
+    <string name="menu_language">Language</string>
+
+    <!-- Common dialog buttons -->
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_done">Done</string>
+    <string name="dialog_later">Later</string>
+
+    <!-- Logout dialog -->
+    <string name="dialog_logout_title">Logout</string>
+    <string name="dialog_logout_msg">Are you sure you want to logout?</string>
+
+    <!-- Delete request dialog -->
+    <string name="dialog_delete_request_title">Delete Request</string>
+    <string name="dialog_delete_request_msg">Delete \"%1$s\"? This cannot be undone.</string>
+    <string name="dialog_delete_positive">Delete</string>
+
+    <!-- Accept bid dialog -->
+    <string name="dialog_accept_bid_title">Accept Bid?</string>
+    <string name="dialog_accept_bid_msg">Accept %1$s\'s bid of PKR %2$s?</string>
+    <string name="dialog_accept_positive">Accept</string>
+
+    <!-- Bid accepted – customer -->
+    <string name="dialog_bid_accepted_title">Bid Accepted!</string>
+    <string name="dialog_bid_accepted_customer_msg">You are now connected with %1$s. A chat has been opened so you can coordinate the repair.</string>
+    <string name="dialog_open_chat">Open Chat</string>
+
+    <!-- Request posted dialog -->
+    <string name="dialog_request_posted_title">Request Posted!</string>
+    <string name="dialog_request_posted_msg">Your repair request has been posted successfully. Verified vendors in your area will now see it and can submit bids.</string>
+    <string name="dialog_view_bids_action">View Bids</string>
+
+    <!-- Rate vendor (Thank You) -->
+    <string name="dialog_thankyou_title">Thank You!</string>
+    <string name="dialog_thankyou_msg">Your rating has been submitted. Your feedback helps other customers find the best vendors.</string>
+    <string name="toast_select_star">Please select a star rating.</string>
+
+    <!-- Vendor – account suspended -->
+    <string name="dialog_suspended_title">Account Suspended</string>
+    <string name="dialog_suspended_msg">Your account has been suspended by the admin. Please contact support.</string>
+
+    <!-- Vendor – bid accepted notification -->
+    <string name="dialog_bid_accepted_vendor_title">🎉 Bid Accepted!</string>
+    <string name="dialog_bid_accepted_vendor_msg">Your bid for \"%1$s\" was accepted by the customer. Head to My Jobs to start the conversation.</string>
+    <string name="dialog_view_my_jobs">View My Jobs</string>
+
+    <!-- Vendor – mark job complete -->
+    <string name="dialog_mark_complete_title">Mark Job Complete?</string>
+    <string name="dialog_mark_complete_msg">Are you sure you want to mark \"%1$s\" as complete? The customer will be notified and can rate your service.</string>
+    <string name="dialog_mark_complete_positive">Yes, Complete</string>
+    <string name="dialog_job_complete_title">Job Complete</string>
+    <string name="dialog_job_complete_msg">The job has been marked as complete. The customer can now rate your service.</string>
+
+    <!-- Vendor – bid submitted -->
+    <string name="dialog_bid_submitted_title">Bid Submitted!</string>
+    <string name="dialog_bid_submitted_msg">Your bid of PKR %1$s has been submitted. You will be notified if the customer accepts.</string>
+
+    <!-- Status labels -->
+    <string name="status_open">Open</string>
+    <string name="status_assigned">Assigned</string>
+    <string name="status_completed">Completed</string>
+
+    <!-- Adapter dynamic labels -->
+    <string name="label_assigned_to">👷 Assigned to: %1$s</string>
+    <string name="label_accepted_bid">✅ Accepted Bid: PKR %1$s</string>
+    <string name="label_your_bid">✅ Your Bid: PKR %1$s</string>
+    <string name="label_km_away">📍 %1$s km away</string>
+
+    <!-- Adapter action buttons -->
+    <string name="btn_view_bids_action">View Bids</string>
+    <string name="btn_open_chat_action">Open Chat</string>
+    <string name="btn_pay_now_action">💳 Pay Now</string>
+    <string name="btn_rate_vendor_action">Rate Vendor</string>
+    <string name="btn_view">View</string>
 </resources>

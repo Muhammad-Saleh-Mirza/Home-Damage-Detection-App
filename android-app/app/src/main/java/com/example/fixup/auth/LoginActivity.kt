@@ -1,5 +1,6 @@
 package com.example.fixup.auth
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -10,6 +11,7 @@ import com.example.fixup.admin.AdminDashboardActivity
 import com.example.fixup.customer.CustomerHomeActivity
 import com.example.fixup.databinding.ActivityLoginBinding
 import com.example.fixup.utils.Constants
+import com.example.fixup.utils.LocaleHelper
 import com.example.fixup.vendor.VendorDashboardActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -22,11 +24,19 @@ class LoginActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnLanguage.setOnClickListener {
+            LocaleHelper.toggleAndApply(this)
+            recreate()
+        }
         binding.btnLogin.setOnClickListener { attemptLogin() }
         binding.tvRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))

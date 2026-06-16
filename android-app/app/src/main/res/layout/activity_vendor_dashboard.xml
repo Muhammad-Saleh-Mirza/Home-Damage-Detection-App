@@ -80,7 +80,7 @@
                                 android:id="@+id/tvVendorGreeting"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Hello, Vendor!"
+                                android:text="@string/tv_hello_vendor"
                                 android:textSize="17sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/white" />
@@ -113,7 +113,7 @@
                     android:background="#FFF3E0"
                     android:gravity="center"
                     android:padding="10dp"
-                    android:text="📍 Enable location in settings to see only nearby jobs"
+                    android:text="@string/tv_location_banner"
                     android:textColor="#E65100"
                     android:textSize="12sp"
                     android:visibility="gone" />
@@ -152,7 +152,7 @@
                             android:id="@+id/tvEmptyAvailable"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="No requests available right now."
+                            android:text="@string/tv_no_jobs_available"
                             android:textSize="15sp"
                             android:textStyle="bold"
                             android:textColor="@color/textPrimary"
@@ -162,7 +162,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="New jobs matching your category will appear here."
+                            android:text="@string/tv_no_jobs_hint"
                             android:textSize="13sp"
                             android:textColor="@color/textSecondary"
                             android:gravity="center" />
@@ -206,7 +206,7 @@
                         android:id="@+id/tvEmptyMyJobs"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="No assigned jobs yet."
+                        android:text="@string/tv_no_my_jobs"
                         android:textSize="15sp"
                         android:textStyle="bold"
                         android:textColor="@color/textPrimary"
@@ -216,7 +216,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Jobs appear here once a customer accepts your bid."
+                        android:text="@string/tv_no_my_jobs_hint"
                         android:textSize="13sp"
                         android:textColor="@color/textSecondary"
                         android:gravity="center" />

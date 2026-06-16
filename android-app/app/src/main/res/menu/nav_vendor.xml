@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_available"
-        android:title="Available"
+        android:title="@string/nav_available"
         android:icon="@drawable/ic_nav_search" />
     <item
         android:id="@+id/nav_myjobs"
-        android:title="My Jobs"
+        android:title="@string/nav_my_jobs"
         android:icon="@drawable/ic_nav_work" />
     <item
         android:id="@+id/nav_chatbot"
-        android:title="Chatbot"
+        android:title="@string/nav_chatbot"
         android:icon="@drawable/ic_nav_chat" />
 </menu>

@@ -13,6 +13,21 @@
         android:padding="24dp"
         android:gravity="center_vertical">
 
+        <!-- Language toggle — top right, above logo -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLanguage"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_gravity="end"
+            android:layout_marginBottom="16dp"
+            android:text="🌐 Language"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            app:cornerRadius="20dp"
+            app:strokeColor="@color/colorPrimary"
+            android:textColor="@color/colorPrimary" />
+
         <!-- Logo -->
         <LinearLayout
             android:layout_width="wrap_content"
@@ -31,7 +46,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="FixUp"
+                android:text="@string/app_name"
                 android:textSize="34sp"
                 android:textStyle="bold"
                 android:textColor="@color/colorPrimary"
@@ -41,7 +56,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your Home, Our Priority"
+            android:text="@string/app_tagline"
             android:textSize="14sp"
             android:textColor="@color/textSecondary"
             android:layout_gravity="center_horizontal"
@@ -53,7 +68,7 @@
             android:id="@+id/tilEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email">
+            android:hint="@string/hint_email">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
@@ -68,7 +83,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Password"
+            android:hint="@string/hint_password"
             app:endIconMode="password_toggle">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -84,7 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="24dp"
-            android:text="Login"
+            android:text="@string/btn_login"
             android:textAllCaps="false" />
 
         <!-- Progress -->
@@ -131,7 +146,7 @@
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="Create an Account"
+            android:text="@string/btn_create_account"
             android:textAllCaps="false"
             android:textStyle="bold"
             app:cornerRadius="8dp"
@@ -146,7 +161,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="24dp"
-            android:text="Forgot Password?"
+            android:text="@string/tv_forgot_password"
             android:textColor="@color/colorPrimary"
             android:textSize="14sp"
             android:clickable="true"

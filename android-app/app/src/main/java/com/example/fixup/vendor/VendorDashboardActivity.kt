@@ -1,5 +1,6 @@
 ﻿package com.example.fixup.vendor
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -11,11 +12,13 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.fixup.R
 import com.example.fixup.auth.LoginActivity
 import com.example.fixup.shared.ChatActivity
@@ -23,6 +26,7 @@ import com.example.fixup.shared.ChatbotActivity
 import com.example.fixup.databinding.ActivityVendorDashboardBinding
 import com.example.fixup.databinding.ItemVendorRequestBinding
 import com.example.fixup.utils.Constants
+import com.example.fixup.utils.LocaleHelper
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -43,6 +47,8 @@ class VendorDashboardActivity : AppCompatActivity() {
     private var currentVendorName = ""
     private var vendorLat: Double? = null
     private var vendorLon: Double? = null
+    private var cachedProfilePicUrl = ""
+    private var toolbarAvatarView: ImageView? = null
 
     private val availableJobs = mutableListOf<VendorRequest>()
     private lateinit var availableAdapter: RequestsAdapter
@@ -76,6 +82,10 @@ class VendorDashboardActivity : AppCompatActivity() {
 
     // ── Lifecycle ──────────────────────────────────────────────────────────────
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityVendorDashboardBinding.inflate(layoutInflater)
@@ -88,21 +98,40 @@ class VendorDashboardActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_logout, menu)
+        toolbarAvatarView = menu.findItem(R.id.action_profile_avatar)
+            ?.actionView?.findViewById(R.id.ivAvatarToolbar)
+        loadAvatarImage(cachedProfilePicUrl)
         return true
     }
 
+    private fun loadAvatarImage(url: String) {
+        cachedProfilePicUrl = url
+        val iv = toolbarAvatarView ?: return
+        Glide.with(this)
+            .load(if (url.isNotEmpty()) url else R.drawable.ic_person_placeholder)
+            .circleCrop()
+            .placeholder(R.drawable.ic_person_placeholder)
+            .error(R.drawable.ic_person_placeholder)
+            .into(iv)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_language) {
+            LocaleHelper.toggleAndApply(this)
+            recreate()
+            return true
+        }
         if (item.itemId == R.id.action_logout) {
             AlertDialog.Builder(this)
-                .setTitle("Logout")
-                .setMessage("Are you sure you want to logout?")
-                .setPositiveButton("Logout") { _, _ ->
+                .setTitle(getString(R.string.dialog_logout_title))
+                .setMessage(getString(R.string.dialog_logout_msg))
+                .setPositiveButton(getString(R.string.dialog_logout_title)) { _, _ ->
                     auth.signOut()
                     startActivity(Intent(this, LoginActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     })
                 }
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.dialog_cancel), null)
                 .show()
             return true
         }
@@ -144,6 +173,7 @@ class VendorDashboardActivity : AppCompatActivity() {
                 if (currentVendorName.isNotEmpty()) {
                     binding.tvVendorGreeting.text = "Hello, $currentVendorName!"
                 }
+                loadAvatarImage(doc.getString("profilePictureUrl") ?: "")
                 if (category.isNotEmpty()) {
                     binding.tvVendorCategory.text = "📂 $category"
                 }
@@ -165,9 +195,9 @@ class VendorDashboardActivity : AppCompatActivity() {
         myJobsListener?.remove();    myJobsListener    = null
         auth.signOut()
         AlertDialog.Builder(this)
-            .setTitle("Account Suspended")
-            .setMessage("Your account has been suspended by the admin. Please contact support.")
-            .setPositiveButton("OK") { _, _ ->
+            .setTitle(getString(R.string.dialog_suspended_title))
+            .setMessage(getString(R.string.dialog_suspended_msg))
+            .setPositiveButton(getString(R.string.dialog_ok)) { _, _ ->
                 startActivity(Intent(this, LoginActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 })
@@ -328,12 +358,12 @@ class VendorDashboardActivity : AppCompatActivity() {
     private fun showBidAcceptedDialog(req: VendorRequest) {
         if (isFinishing || isDestroyed) return
         AlertDialog.Builder(this)
-            .setTitle("🎉 Bid Accepted!")
-            .setMessage("Your bid for \"${req.title}\" was accepted by the customer. Head to My Jobs to start the conversation.")
-            .setPositiveButton("View My Jobs") { _, _ ->
+            .setTitle(getString(R.string.dialog_bid_accepted_vendor_title))
+            .setMessage(getString(R.string.dialog_bid_accepted_vendor_msg, req.title))
+            .setPositiveButton(getString(R.string.dialog_view_my_jobs)) { _, _ ->
                 binding.bottomNav.selectedItemId = R.id.nav_myjobs
             }
-            .setNegativeButton("Later", null)
+            .setNegativeButton(getString(R.string.dialog_later), null)
             .show()
     }
 
@@ -357,10 +387,10 @@ class VendorDashboardActivity : AppCompatActivity() {
 
     private fun confirmMarkComplete(req: VendorRequest) {
         AlertDialog.Builder(this)
-            .setTitle("Mark Job Complete?")
-            .setMessage("Are you sure you want to mark \"${req.title}\" as complete? The customer will be notified and can rate your service.")
-            .setPositiveButton("Yes, Complete") { _, _ -> doMarkComplete(req) }
-            .setNegativeButton("Cancel", null)
+            .setTitle(getString(R.string.dialog_mark_complete_title))
+            .setMessage(getString(R.string.dialog_mark_complete_msg, req.title))
+            .setPositiveButton(getString(R.string.dialog_mark_complete_positive)) { _, _ -> doMarkComplete(req) }
+            .setNegativeButton(getString(R.string.dialog_cancel), null)
             .show()
     }
 
@@ -374,9 +404,9 @@ class VendorDashboardActivity : AppCompatActivity() {
             )
             .addOnSuccessListener {
                 AlertDialog.Builder(this)
-                    .setTitle("Job Complete")
-                    .setMessage("The job has been marked as complete. The customer can now rate your service.")
-                    .setPositiveButton("OK", null)
+                    .setTitle(getString(R.string.dialog_job_complete_title))
+                    .setMessage(getString(R.string.dialog_job_complete_msg))
+                    .setPositiveButton(getString(R.string.dialog_ok), null)
                     .show()
             }
             .addOnFailureListener { e ->
@@ -418,7 +448,7 @@ class VendorDashboardActivity : AppCompatActivity() {
                         " – ${String.format(Locale.US, "%,d", req.priceMax)}"
 
                 if (req.acceptedBidAmount > 0 && (req.status == "assigned" || req.status == "completed")) {
-                    tvAcceptedBid.text = "✅ Your Bid: PKR ${String.format(Locale.US, "%,d", req.acceptedBidAmount)}"
+                    tvAcceptedBid.text = getString(R.string.label_your_bid, String.format(Locale.US, "%,d", req.acceptedBidAmount))
                     tvAcceptedBid.visibility = View.VISIBLE
                 } else {
                     tvAcceptedBid.visibility = View.GONE
@@ -426,7 +456,7 @@ class VendorDashboardActivity : AppCompatActivity() {
 
                 val dist = req.distanceKm
                 if (dist != null) {
-                    tvDistance.text = "📍 ${String.format("%.1f", dist)} km away"
+                    tvDistance.text = getString(R.string.label_km_away, String.format("%.1f", dist))
                     tvDistance.visibility = View.VISIBLE
                 } else {
                     tvDistance.visibility = View.GONE
@@ -439,7 +469,11 @@ class VendorDashboardActivity : AppCompatActivity() {
                 when (req.status) {
                     "assigned", "completed" -> {
                         tvStatus.visibility = View.VISIBLE
-                        tvStatus.text       = req.status.replaceFirstChar(Char::uppercase)
+                        tvStatus.text = when (req.status) {
+                            "assigned"  -> getString(R.string.status_assigned)
+                            "completed" -> getString(R.string.status_completed)
+                            else        -> req.status.replaceFirstChar(Char::uppercase)
+                        }
                         tvStatus.background = GradientDrawable().apply {
                             shape        = GradientDrawable.RECTANGLE
                             cornerRadius = 12f
@@ -454,7 +488,7 @@ class VendorDashboardActivity : AppCompatActivity() {
 
                 val isAssigned = req.status == "assigned"
 
-                val showChat = onChatClick != null && isAssigned
+                val showChat = onChatClick != null && (isAssigned || req.status == "completed")
                 btnOpenChat.visibility = if (showChat) View.VISIBLE else View.GONE
                 btnOpenChat.setOnClickListener { onChatClick?.invoke(req) }
 

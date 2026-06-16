@@ -1,5 +1,6 @@
 package com.example.fixup.auth
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
@@ -8,6 +9,7 @@ import com.example.fixup.admin.AdminDashboardActivity
 import com.example.fixup.customer.CustomerHomeActivity
 import com.example.fixup.databinding.ActivitySplashBinding
 import com.example.fixup.utils.Constants
+import com.example.fixup.utils.LocaleHelper
 import com.example.fixup.vendor.VendorDashboardActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -17,6 +19,10 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySplashBinding
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

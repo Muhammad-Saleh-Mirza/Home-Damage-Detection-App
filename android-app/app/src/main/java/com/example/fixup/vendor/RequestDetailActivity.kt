@@ -1,5 +1,6 @@
 package com.example.fixup.vendor
 
+import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -7,8 +8,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.example.fixup.R
 import com.example.fixup.databinding.ActivityRequestDetailBinding
 import com.example.fixup.utils.Constants
+import com.example.fixup.utils.LocaleHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -22,6 +25,10 @@ class RequestDetailActivity : AppCompatActivity() {
     private val db   = FirebaseFirestore.getInstance()
 
     private lateinit var requestId: String
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,20 +95,35 @@ class RequestDetailActivity : AppCompatActivity() {
                 binding.tvDescription.text  = description
 
                 // AI result
-                val label = detectedClass.replace("_", " ")
-                    .split(" ").joinToString(" ") { it.replaceFirstChar(Char::titlecase) }
-                binding.tvDetectedClass.text   = "$label Detected"
-                binding.tvDetectedService.text = "Suggested Service: $detectedCategory"
-                binding.tvConfidence.text      = "Confidence: ${(confidence * 100).toInt()}%"
+                val isUrdu = LocaleHelper.getSavedLanguage(this) == LocaleHelper.LANG_UR
+                val classLabel = if (isUrdu)
+                    Constants.DETECTED_CLASS_URDU[detectedClass] ?: detectedClass.replace("_", " ")
+                        .split(" ").joinToString(" ") { it.replaceFirstChar(Char::titlecase) }
+                else
+                    detectedClass.replace("_", " ")
+                        .split(" ").joinToString(" ") { it.replaceFirstChar(Char::titlecase) }
+                val serviceLabel = if (isUrdu)
+                    Constants.SERVICE_CATEGORY_URDU[detectedCategory] ?: detectedCategory
+                else
+                    detectedCategory
+                val suggestedPrefix = if (isUrdu) "تجویز کردہ سروس:" else "Suggested Service:"
+                val confidenceLabel = if (isUrdu) "اعتماد:" else "Confidence:"
+
+                binding.tvDetectedClass.text   = classLabel
+                binding.tvDetectedService.text = "$suggestedPrefix $serviceLabel"
+                binding.tvConfidence.text      = "$confidenceLabel ${(confidence * 100).toInt()}%"
 
                 val fmt = "%,d"
                 binding.tvPriceRange.text       = "💰 PKR ${String.format(Locale.US, fmt, priceMin)}" +
                         " – ${String.format(Locale.US, fmt, priceMax)}"
-                binding.tvPriceRecommended.text = "Recommended: PKR ${String.format(Locale.US, fmt, priceRec)}"
-                binding.tvPriceReason.text      = if (sampleCount > 0)
-                    "\"$priceReason\" · Based on $sampleCount bids"
+                binding.tvPriceRecommended.text = if (isUrdu)
+                    "تجویز کردہ: PKR ${String.format(Locale.US, fmt, priceRec)}"
                 else
-                    "\"$priceReason\""
+                    "Recommended: PKR ${String.format(Locale.US, fmt, priceRec)}"
+                binding.tvPriceReason.text = if (sampleCount > 0) {
+                    if (isUrdu) "\"$priceReason\" · $sampleCount بولیوں کی بنیاد پر"
+                    else "\"$priceReason\" · Based on $sampleCount bids"
+                } else "\"$priceReason\""
 
                 checkAlreadyBid()
             }
@@ -155,16 +177,18 @@ class RequestDetailActivity : AppCompatActivity() {
 
         db.collection(Constants.COLLECTION_USERS).document(uid).get()
             .addOnSuccessListener { doc ->
-                val vendorName     = doc.getString("name") ?: "Vendor"
-                val vendorRating   = doc.getDouble("rating") ?: 0.0
-                val vendorCategory = doc.getString("serviceCategory") ?: ""
+                val vendorName          = doc.getString("name") ?: "Vendor"
+                val vendorRating        = doc.getDouble("rating") ?: 0.0
+                val vendorCategory      = doc.getString("serviceCategory") ?: ""
+                val vendorProfilePicUrl = doc.getString("profilePictureUrl") ?: ""
 
                 val bid = hashMapOf<String, Any?>(
-                    "requestId"      to requestId,
-                    "vendorId"       to uid,
-                    "vendorName"     to vendorName,
-                    "vendorRating"   to vendorRating,
-                    "vendorCategory" to vendorCategory,
+                    "requestId"          to requestId,
+                    "vendorId"           to uid,
+                    "vendorName"         to vendorName,
+                    "vendorRating"       to vendorRating,
+                    "vendorCategory"     to vendorCategory,
+                    "vendorProfilePicUrl" to vendorProfilePicUrl,
                     "amount"         to amount,
                     "estimatedHours" to hours,
                     "note"           to note,
@@ -176,9 +200,9 @@ class RequestDetailActivity : AppCompatActivity() {
                     .addOnSuccessListener {
                         setSubmitLoading(false)
                         AlertDialog.Builder(this)
-                            .setTitle("Bid Submitted!")
-                            .setMessage("Your bid of PKR ${String.format(java.util.Locale.US, "%,d", amount)} has been submitted. You will be notified if the customer accepts.")
-                            .setPositiveButton("OK") { _, _ -> finish() }
+                            .setTitle(getString(R.string.dialog_bid_submitted_title))
+                            .setMessage(getString(R.string.dialog_bid_submitted_msg, String.format(java.util.Locale.US, "%,d", amount)))
+                            .setPositiveButton(getString(R.string.dialog_ok)) { _, _ -> finish() }
                             .setCancelable(false)
                             .show()
                     }

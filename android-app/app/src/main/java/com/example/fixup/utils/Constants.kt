@@ -14,4 +14,20 @@ object Constants {
     const val ROLE_ADMIN          = "admin"
     const val DEFAULT_CITY        = "Karachi"
     const val MAX_DISTANCE_KM     = 5.0
+
+    val DETECTED_CLASS_URDU = mapOf(
+        "wall_crack"       to "دیوار کی دراڑ",
+        "peeling_paint"    to "اکھڑتا ہوا پینٹ",
+        "spalling"         to "سطح کا گرنا",
+        "algae"            to "کائی / نمی",
+        "electrical_fault" to "بجلی کی خرابی"
+    )
+
+    val SERVICE_CATEGORY_URDU = mapOf(
+        "Plastering / Mason" to "پلاسٹر / مزدور",
+        "Painter"            to "پینٹر",
+        "Electrician"        to "الیکٹریشن",
+        "Plumber / Mason"    to "پلمبر / مزدور",
+        "General Handyman"   to "عام مستری"
+    )
 }

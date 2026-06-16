@@ -52,7 +52,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Analyzing damage..."
+                android:text="@string/tv_analyzing"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -91,7 +91,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="📷 Photo Tips"
+                        android:text="@string/tv_photo_tips"
                         android:textStyle="bold"
                         android:textSize="13sp"
                         android:textColor="@color/textPrimary" />
@@ -100,7 +100,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="🧱 Wall crack  →  photograph crack directly, close up&#10;💧 Moisture / algae  →  photograph the affected wall&#10;⚡ Electrical issue  →  photograph damaged socket or wire&#10;🎨 Paint damage  →  photograph the peeling area&#10;🧱 Surface spalling  →  photograph the crumbling surface"
+                        android:text="@string/tv_photo_tips_body"
                         android:textSize="12sp"
                         android:lineSpacingExtra="3dp"
                         android:textColor="@color/textSecondary" />
@@ -154,7 +154,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Take or choose a photo"
+                                android:text="@string/tv_take_or_choose"
                                 android:textColor="@color/textSecondary"
                                 android:textSize="14sp" />
                         </LinearLayout>
@@ -172,7 +172,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="📷 Camera"
+                            android:text="@string/btn_camera"
                             android:textAllCaps="false"
                             app:cornerRadius="8dp" />
 
@@ -186,7 +186,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="🖼 Gallery"
+                            android:text="@string/btn_gallery"
                             android:textAllCaps="false"
                             app:cornerRadius="8dp"
                             app:strokeColor="@color/colorPrimary" />
@@ -199,7 +199,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:hint="Describe the damage (size, severity…)">
+                android:hint="@string/hint_description">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etDescription"
@@ -216,7 +216,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:hint="City">
+                android:hint="@string/hint_city">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etCity"
@@ -230,7 +230,7 @@
                 android:id="@+id/btnAnalyze"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:text="✨ Analyze &amp; Estimate Price"
+                android:text="@string/btn_analyze"
                 android:textAllCaps="false"
                 android:enabled="false"
                 app:cornerRadius="8dp" />
@@ -333,7 +333,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Min"
+                                android:text="@string/label_min"
                                 android:textSize="11sp"
                                 android:textColor="@color/textSecondary" />
 
@@ -357,7 +357,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Recommended"
+                                android:text="@string/label_recommended"
                                 android:textSize="11sp"
                                 android:textColor="@color/colorAccent"
                                 android:textStyle="bold" />
@@ -381,7 +381,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Max"
+                                android:text="@string/label_max"
                                 android:textSize="11sp"
                                 android:textColor="@color/textSecondary" />
 
@@ -438,7 +438,7 @@
                 android:layout_height="52dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="24dp"
-                android:text="Confirm &amp; Post Request"
+                android:text="@string/btn_confirm_post"
                 android:textAllCaps="false"
                 android:visibility="gone"
                 app:backgroundTint="@color/statusCompleted"

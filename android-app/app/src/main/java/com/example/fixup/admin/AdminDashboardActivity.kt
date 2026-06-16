@@ -1,5 +1,6 @@
 package com.example.fixup.admin
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -12,6 +13,7 @@ import com.example.fixup.R
 import com.example.fixup.auth.LoginActivity
 import com.example.fixup.databinding.ActivityAdminDashboardBinding
 import com.example.fixup.utils.Constants
+import com.example.fixup.utils.LocaleHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,6 +23,10 @@ class AdminDashboardActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAdminDashboardBinding
     private val auth = FirebaseAuth.getInstance()
     private val db   = FirebaseFirestore.getInstance()
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +54,11 @@ class AdminDashboardActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_language) {
+            LocaleHelper.toggleAndApply(this)
+            recreate()
+            return true
+        }
         if (item.itemId == R.id.action_logout) {
             confirmLogout()
             return true
